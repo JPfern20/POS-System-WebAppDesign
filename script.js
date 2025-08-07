@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function() {
     var myButton = document.getElementById("myButton");
     if (myButton) {
         myButton.addEventListener("click", function() {
-            alert("Welcome!");
+            alert("You found me currently working on this!");
         });
     }
 
@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function() {
     var but1 = document.getElementById("but1");
     if (but1) {
         but1.addEventListener("click", function() {
-            alert("Cute");
+            alert("You found me currently working on this!");
         });
     }
 
@@ -36,6 +36,14 @@ document.addEventListener("DOMContentLoaded", function() {
     if (loginButton) {
         loginButton.addEventListener("click", function() {
             window.location.href = "user.html";
+        });
+    }
+
+    //"Submit Button"
+    var submitButton = document.getElementById("submitButton");
+    if (submitButton) {
+        submitButton.addEventListener("click", function() {
+            alert("You found me currently working on this!");
         });
     }
 
