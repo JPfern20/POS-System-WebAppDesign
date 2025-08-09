@@ -2,16 +2,22 @@
   "name": "my-java-web-app",
   "version": "1.0.0",
   "description": "A built-in point of sale system.",
-  "main": "db.js",
+  "main": "scripts.js",
   "scripts": {
-    "start": "node db.js",
+    "start": "netlify dev",
     "build": "echo 'Build step can be defined here'",
-    "test": "echo 'No tests specified' && exit 0"
+    "test": "echo 'No tests specified' && exit 0",
+    "serve": "live-server"
   },
   "dependencies": {
+    "async": "^3.2.6",
+    "EventEmitter": "^1.0.0",
+    "lodash": "^4.17.21",
     "pg": "^8.7.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "live-server": "^1.2.0"
+  },
   "keywords": [
     "web",
     "point-of-sale",

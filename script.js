@@ -5,7 +5,16 @@ document.addEventListener("DOMContentLoaded", function() {
     if (myButton) {
         myButton.addEventListener("click", function() {
             alert("You found me currently working on this!");
-            // Here you can add functionality to place an order
+            fetch('/.netlify/functions/db.js?action=getProducts')
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data); // Handle the response data as needed
+                    alert("Showing Products.");
+                })
+                .catch(error => {
+                    console.error('Error Fetching Products:', error);
+                    alert("Failed to Fetch order.");
+                });
         });
     }
 
