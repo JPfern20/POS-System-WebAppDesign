@@ -1,22 +1,21 @@
 {
-  "name": "my-java-web-app",
+  "name": "pos-system",
   "version": "1.0.0",
-  "description": "A built-in point of sale system.",
+  "description": "A point of sale system with Neon database",
   "main": "scripts.js",
   "scripts": {
     "start": "netlify dev",
-    "build": "echo 'Build step can be defined here'",
-    "test": "echo 'No tests specified' && exit 0",
-    "serve": "live-server"
+    "build": "mkdir -p dist && cp -r public/* dist/",
+    "serve": "http-server dist",
+    "test": "echo 'No tests specified' && exit 0"
   },
   "dependencies": {
     "async": "^3.2.6",
-    "EventEmitter": "^1.0.0",
     "lodash": "^4.17.21",
-    "pg": "^8.7.1"
+    "pg": "^8.11.5"
   },
   "devDependencies": {
-    "live-server": "^1.2.0"
+    "http-server": "^14.1.1"
   },
   "keywords": [
     "web",
