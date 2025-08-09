@@ -29,7 +29,7 @@ function loadProducts() {
             data.forEach(product => {
                 table.innerHTML += `
                     <tr>
-                        <td>${product.name}</td>
+                        <td>${product.product_name}</td>
                         <td>${product.description}</td>
                         <td>$${product.price}</td>
                         <td>
@@ -83,12 +83,12 @@ function loadOrders() {
             data.forEach(order => {
                 table.innerHTML += `
                     <tr>
-                        <td>${order.id}</td>
-                        <td>${order.customerName}</td>
+                        <td>${order.order_id}</td>
+                        <td>${order.customerID}</td>
                         <td>${order.product}</td>
-                        <td>${order.quantity}</td>
-                        <td>$${order.total}</td>
-                        <td>${order.date}</td>
+                        <td>${order.status}</td>
+                        <td>$${order.total_amount}</td>
+                        <td>${order.order_date}</td>
                     </tr>
                 `;
             });
