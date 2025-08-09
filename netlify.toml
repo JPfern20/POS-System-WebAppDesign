@@ -2,7 +2,7 @@
 
 [build]
     command = "npm run build"
-    publish = "build"
+    publish = "dist"
 
 [env]
     DATABASE_URL = "postgresql://neondb_owner:npg_tNLAyx01ZEFH@ep-flat-glade-aed8yi76-pooler.c-2.us-east-2.aws.neon.tech/PosSystem?sslmode=require&channel_binding=require"
