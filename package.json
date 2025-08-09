@@ -1,0 +1,22 @@
+{
+  "name": "my-java-web-app",
+  "version": "1.0.0",
+  "description": "A built-in point of sale system.",
+  "main": "db.js",
+  "scripts": {
+    "start": "node db.js",
+    "build": "echo 'Build step can be defined here'",
+    "test": "echo 'No tests specified' && exit 0"
+  },
+  "dependencies": {
+    "pg": "^8.7.1"
+  },
+  "devDependencies": {},
+  "keywords": [
+    "web",
+    "point-of-sale",
+    "system"
+  ],
+  "author": "John Patrick Fernandez",
+  "license": "ISC"
+}
