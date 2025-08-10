@@ -2,46 +2,66 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <title>Login & Registration</title>
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
-    <h2>Welcome to Login Page</h2>
+    <h2>Welcome</h2>
     <p>Please Enter Your Credentials to Log In.</p>
     
+    <!-- USER LOGIN -->
+    <h3>User Login</h3>
     <form id="loginForm">
-        <label for="username">User  Username: </label>
+        <label for="username">User Username: </label>
         <input type="text" id="username" name="username" required>
         <br>
-        <label for="password">User  Password:  </label>
+        <label for="password">User Password: </label>
         <input type="password" id="password" name="password" required>
-        <br>
-        <br>
+        <br><br>
         <div class="button-group">
-            <button type="submit" id="submitButton">User  Login</button>
+            <button type="submit" id="submitButton">User Login</button>
             <br>
             <button id="backButton" type="button">Back to Home</button>
         </div>
     </form>
-    <br>
-    <p> - Or -</p>
-    <br
-    <h2>Admin Login</h2>
+    
+    <hr>
+
+    <!-- ADMIN LOGIN -->
+    <h3>Admin Login</h3>
     <form id="adminLoginForm">
         <label for="adminUsername">Admin Username: </label>
         <input type="text" id="adminUsername" name="adminUsername" required>
         <br>
-        <label for="adminPassword">Admin Password:  </label>
+        <label for="adminPassword">Admin Password: </label>
         <input type="password" id="adminPassword" name="adminPassword" required>
-        <br>
-        <br>
+        <br><br>
         <div class="button-group">
             <button type="submit" id="loginButton">Admin Login</button>
-            
         </div>
     </form>
-    
-    <br>
+
+    <hr>
+
+    <!-- USER REGISTRATION -->
+    <h3>Register New Account</h3>
+    <form id="registerForm">
+        <label for="regUsername">Choose Username: </label>
+        <input type="text" id="regUsername" name="regUsername" required>
+        <br>
+        <label for="regPassword">Choose Password: </label>
+        <input type="password" id="regPassword" name="regPassword" required>
+        <br>
+        <label for="regEmail">Email Address: </label>
+        <input type="email" id="regEmail" name="regEmail" required>
+        <br><br>
+        <div class="button-group">
+            <button type="submit" id="registerButton">Register</button>
+        </div>
+    </form>
+
+    <hr>
+
     <p id="message"></p>
     <script src="script.js"></script>
 </body>
