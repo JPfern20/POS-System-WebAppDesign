@@ -25,23 +25,29 @@ exports.handler = async (event) => {
     }
 
     // ==================== VIEW ORDERS ====================
-     else if (event.httpMethod === "GET" && action === "viewOrders") {
+    else if (event.httpMethod === "GET" && action === "viewOrders") {
       const res = await client.query(`
-        SELECT o.order_id, o.product_id, o.quantity, o.customer_name, o.order_date,
-               s.status_name
+        SELECT o.*, s.status_name
         FROM orders o
         JOIN status s ON o.status_id = s.status_id
         ORDER BY o.order_date DESC
       `);
       result = res.rows;
     }
+
     // ==================== USER LOGIN ====================
     else if (event.httpMethod === "GET" && action === "login") {
       const { username, password } = params;
+
+      if (!username || !password) {
+        return { statusCode: 400, body: JSON.stringify({ error: "Missing username or password" }) };
+      }
+
       const res = await client.query(
-        "SELECT * FROM users WHERE username=$1 AND password=$2",
+        "SELECT user_id, username, role FROM users WHERE username = $1 AND password = $2",
         [username, password]
       );
+
       if (res.rows.length > 0) {
         result = { success: true, user: res.rows[0] };
       } else {
@@ -49,13 +55,48 @@ exports.handler = async (event) => {
       }
     }
 
+    // ==================== USER REGISTRATION ====================
+    else if (event.httpMethod === "POST" && action === "registerUser") {
+      const body = JSON.parse(event.body || "{}");
+      const { username, password, role } = body;
+
+      if (!username || !password) {
+        return { statusCode: 400, body: JSON.stringify({ error: "Username and password are required" }) };
+      }
+
+      // Default role to "customer" if not provided
+      const userRole = role || "customer";
+
+      // Check if username already exists
+      const checkUser = await client.query(
+        "SELECT user_id FROM users WHERE username = $1",
+        [username]
+      );
+      if (checkUser.rows.length > 0) {
+        return { statusCode: 400, body: JSON.stringify({ error: "Username already exists" }) };
+      }
+
+      await client.query(
+        "INSERT INTO users (username, password, role) VALUES ($1, $2, $3)",
+        [username, password, userRole]
+      );
+
+      result = { success: true, message: "User registered successfully" };
+    }
+
     // ==================== ADMIN LOGIN ====================
     else if (event.httpMethod === "GET" && action === "adminLogin") {
       const { adminUsername, adminPassword } = params;
+
+      if (!adminUsername || !adminPassword) {
+        return { statusCode: 400, body: JSON.stringify({ error: "Missing admin username or password" }) };
+      }
+
       const res = await client.query(
-        "SELECT * FROM admins WHERE username=$1 AND password=$2",
+        "SELECT admin_id, username FROM admins WHERE username = $1 AND password = $2",
         [adminUsername, adminPassword]
       );
+
       if (res.rows.length > 0) {
         result = { success: true, admin: res.rows[0] };
       } else {
@@ -71,12 +112,10 @@ exports.handler = async (event) => {
       if (!product_id || !quantity || !customer_name) {
         return { statusCode: 400, body: JSON.stringify({ error: "Missing order fields" }) };
       }
-      // Default na pending pag-order
-      const finalStatusId = status_id || 1; // Default to 'Pending' status if not provided
-      
+
       await client.query(
-        "INSERT INTO orders (product_id, quantity, customer_name, status_id, order_date) VALUES ($1, $2, $3, $4, NOW())",
-        [product_id, quantity, customer_name, finalStatusId]
+        "INSERT INTO orders (product_id, quantity, customer_name, status_id, order_date) VALUES ($1, $2, $3, 1, NOW())",
+        [product_id, quantity, customer_name]
       );
 
       result = { success: true, message: "Order placed successfully" };
