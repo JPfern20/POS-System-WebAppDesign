@@ -21,19 +21,22 @@ function renderCart() {
   let total = 0;
 
   cart.forEach(item => {
-    const subtotal = item.price * item.quantity;
-    total += subtotal;
+  const price = Number(item.price) || 0;        // safe number fallback
+  const quantity = Number(item.quantity) || 0;  // safe number fallback
+  const subtotal = price * quantity;
 
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td>${item.product_name}</td>
-      <td>${item.quantity}</td>
-      <td>$${item.price.toFixed(2)}</td>
-      <td>$${subtotal.toFixed(2)}</td>
-      <td><button onclick="removeFromCart('${item.product_id}')">Remove</button></td>
-    `;
-    cartBody.appendChild(row);
-  });
+  total += subtotal;
+
+  const row = document.createElement("tr");
+  row.innerHTML = `
+    <td>${item.product_name || "Unknown"}</td>
+    <td>${quantity}</td>
+    <td>$${price.toFixed(2)}</td>
+    <td>$${subtotal.toFixed(2)}</td>
+    <td><button onclick="removeFromCart('${item.product_id}')">Remove</button></td>
+  `;
+  cartBody.appendChild(row);
+});
 
   cartTotal.textContent = `$${total.toFixed(2)}`;
 }
