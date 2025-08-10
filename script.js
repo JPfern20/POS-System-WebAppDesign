@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (but1) but1.addEventListener("click", () => window.location.href = "products.html");
 
     const but2 = document.getElementById("but2");
-    if (but2) but2.addEventListener("click", () => window.location.href = "user.html");
+    if (but2) but2.addEventListener("click", () => window.location.href = "nextpage.html");
 
     const loginButton = document.getElementById("loginButton");
     if (loginButton) {
