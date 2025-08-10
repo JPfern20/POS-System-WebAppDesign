@@ -109,10 +109,10 @@ function loadOrders() {
                 table.innerHTML += `
                     <tr>
                         <td>${order.order_id}</td>
-                        <td>${order.customerID}</td>
-                        <td>${order.product}</td>
+                        <td>${order.customer_name}</td>
+                        <td>${order.products}</td>
                         <td>${order.status}</td>
-                        <td>$${order.total_amount}</td>
+                        <td>P${order.total_amount}</td>
                         <td>${order.order_date}</td>
                     </tr>
                 `;

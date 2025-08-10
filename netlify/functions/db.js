@@ -26,7 +26,7 @@ exports.handler = async (event) => {
 
     // ==================== VIEW ORDERS ====================
     else if (event.httpMethod === "GET" && action === "viewOrders") {
-      const res = await client.query("SELECT * FROM orders ORDER BY created_at DESC");
+      const res = await client.query("SELECT * FROM orders ORDER BY order_date DESC");
       result = res.rows;
     }
 
