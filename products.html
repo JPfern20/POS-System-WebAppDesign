@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>View Products</title>
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="style.css" />
 </head>
 <body>
     <h1>Available Products</h1>
@@ -17,20 +17,18 @@
             </tr>
         </thead>
         <tbody id="productList">
-        
             <!-- Products will be loaded here via script.js -->
         </tbody>
     </table>
-    <br>
-    <button onclick="addToCart('${product.product_id}', '${product.product_name}', ${product.price})">
-  Add to Cart
-</button>
 
-    <br>
-    <button onclick="checkout()">Checkout</button>
+    <br />
+    <!-- Cart and checkout controls -->
+    <button id="viewCartButton" onclick="viewCart()">View Cart</button>
+    <button id="checkoutButton" onclick="checkout()">Checkout</button>
 
-    <br>
+    <br /><br />
     <button id="backButton">Back to Home</button>
+
     <script src="script.js"></script>
 </body>
 </html>

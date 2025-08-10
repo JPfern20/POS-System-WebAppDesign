@@ -141,6 +141,72 @@ exports.handler = async (event) => {
       result = { success: true, message: "Order placed successfully", order_id };
     }
 
+    // ==================== CHECKOUT (PLACE MULTI-ITEM ORDER) ====================
+    else if (event.httpMethod === "POST" && action === "checkout") {
+      const body = JSON.parse(event.body || "{}");
+      const { user_id, cart } = body; 
+      // cart = [{ product_id, quantity }, { product_id, quantity }, ...]
+
+      if (!user_id || !Array.isArray(cart) || cart.length === 0) {
+        return { statusCode: 400, body: JSON.stringify({ error: "Missing user_id or cart is empty" }) };
+      }
+
+      // Get product prices for all products in cart
+      const productIds = cart.map(item => item.product_id);
+
+      // Query product prices in one go
+      const productsRes = await client.query(
+        `SELECT product_id, price FROM products WHERE product_id = ANY($1)`,
+        [productIds]
+      );
+
+      const priceMap = {};
+      productsRes.rows.forEach(p => {
+        priceMap[p.product_id] = p.price;
+      });
+
+      // Calculate total amount and validate products
+      let totalAmount = 0;
+      for (const item of cart) {
+        if (!priceMap[item.product_id]) {
+          return { statusCode: 400, body: JSON.stringify({ error: `Product not found: ${item.product_id}` }) };
+        }
+        if (!item.quantity || item.quantity <= 0) {
+          return { statusCode: 400, body: JSON.stringify({ error: `Invalid quantity for product ${item.product_id}` }) };
+        }
+        totalAmount += priceMap[item.product_id] * item.quantity;
+      }
+
+      // Insert into orders table
+      const orderInsert = await client.query(
+        `INSERT INTO orders ("customerID", total_amount, status_id, order_date)
+         VALUES ($1, $2, 1, NOW())
+         RETURNING order_id`,
+        [user_id, totalAmount]
+      );
+      const order_id = orderInsert.rows[0].order_id;
+
+      // Insert all order_items (batch insert)
+      const insertValues = [];
+      const placeholders = [];
+      let placeholderIndex = 1;
+
+      for (const item of cart) {
+        insertValues.push(order_id, item.product_id, item.quantity, priceMap[item.product_id]);
+        placeholders.push(`($${placeholderIndex}, $${placeholderIndex + 1}, $${placeholderIndex + 2}, $${placeholderIndex + 3})`);
+        placeholderIndex += 4;
+      }
+
+      const insertQuery = `
+        INSERT INTO order_items (order_id, product_id, quantity, price)
+        VALUES ${placeholders.join(", ")}
+      `;
+
+      await client.query(insertQuery, insertValues);
+
+      result = { success: true, message: "Checkout successful", order_id };
+    }
+
     // ==================== INVALID ACTION ====================
     else {
       return { statusCode: 400, body: JSON.stringify({ error: "Invalid action" }) };
@@ -160,68 +226,3 @@ exports.handler = async (event) => {
     await client.end();
   }
 };
-// ==================== CHECKOUT (PLACE MULTI-ITEM ORDER) ====================
-else if (event.httpMethod === "POST" && action === "checkout") {
-  const body = JSON.parse(event.body || "{}");
-  const { user_id, cart } = body; 
-  // cart = [{ product_id, quantity }, { product_id, quantity }, ...]
-
-  if (!user_id || !Array.isArray(cart) || cart.length === 0) {
-    return { statusCode: 400, body: JSON.stringify({ error: "Missing user_id or cart is empty" }) };
-  }
-
-  // Get product prices for all products in cart
-  const productIds = cart.map(item => item.product_id);
-
-  // Query product prices in one go
-  const productsRes = await client.query(
-    `SELECT product_id, price FROM products WHERE product_id = ANY($1)`,
-    [productIds]
-  );
-
-  const priceMap = {};
-  productsRes.rows.forEach(p => {
-    priceMap[p.product_id] = p.price;
-  });
-
-  // Calculate total amount and validate products
-  let totalAmount = 0;
-  for (const item of cart) {
-    if (!priceMap[item.product_id]) {
-      return { statusCode: 400, body: JSON.stringify({ error: `Product not found: ${item.product_id}` }) };
-    }
-    if (!item.quantity || item.quantity <= 0) {
-      return { statusCode: 400, body: JSON.stringify({ error: `Invalid quantity for product ${item.product_id}` }) };
-    }
-    totalAmount += priceMap[item.product_id] * item.quantity;
-  }
-
-  // Insert into orders table
-  const orderInsert = await client.query(
-    `INSERT INTO orders ("customerID", total_amount, status_id, order_date)
-     VALUES ($1, $2, 1, NOW())
-     RETURNING order_id`,
-    [user_id, totalAmount]
-  );
-  const order_id = orderInsert.rows[0].order_id;
-
-  // Insert all order_items (batch insert)
-  const insertValues = [];
-  const placeholders = [];
-  let placeholderIndex = 1;
-
-  for (const item of cart) {
-    insertValues.push(order_id, item.product_id, item.quantity, priceMap[item.product_id]);
-    placeholders.push(`($${placeholderIndex}, $${placeholderIndex + 1}, $${placeholderIndex + 2}, $${placeholderIndex + 3})`);
-    placeholderIndex += 4;
-  }
-
-  const insertQuery = `
-    INSERT INTO order_items (order_id, product_id, quantity, price)
-    VALUES ${placeholders.join(", ")}
-  `;
-
-  await client.query(insertQuery, insertValues);
-
-  result = { success: true, message: "Checkout successful", order_id };
-}
