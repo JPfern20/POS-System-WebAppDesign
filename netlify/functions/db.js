@@ -7,7 +7,8 @@ exports.handler = async (event) => {
 
   const client = new Client({
     connectionString: process.env.NEON_DATABASE_URL,
-    ssl: { rejectUnauthorized: false }
+    ssl: { rejectUnauthorized: false },
+    database: "PosSystem"
   });
 
   let result;

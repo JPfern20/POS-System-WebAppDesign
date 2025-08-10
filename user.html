@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login & Registration</title>
+    <title>User & Admin Login / Registration</title>
     <link rel="stylesheet" type="text/css" href="style.css">
     <style>
         body {
@@ -17,54 +17,79 @@
             display: block;
             margin: 10px auto;
         }
+        .section {
+            margin-bottom: 30px;
+        }
+        .message {
+            color: red;
+            margin-top: 8px;
+            min-height: 18px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
     <h1><strong>User and Admin Login</strong></h1>
 
-    <h2>Customer Login</h2>
-    <form id="loginForm">
-        <label for="username">Username: </label>
-        <input type="text" id="username" name="username" required>
-        <br>
-        <label for="password">Password: </label>
-        <input type="password" id="password" name="password" required>
-        <br>
-        <button type="submit">Login</button>
-    </form>
+    <!-- CUSTOMER LOGIN -->
+    <div class="section">
+        <h2>Customer Login</h2>
+        <form id="loginForm">
+            <label for="username">Username: </label>
+            <input type="text" id="username" name="username" required>
+            <br>
+            <label for="password">Password: </label>
+            <input type="password" id="password" name="password" required>
+            <br>
+            <button type="submit">Login</button>
+        </form>
+    </div>
 
     <hr>
 
-    <h2>Admin Login</h2>
-    <form id="adminLoginForm">
-        <label for="adminUsername">Username: </label>
-        <input type="text" id="adminUsername" name="adminUsername" required>
-        <br>
-        <label for="adminPassword">Password: </label>
-        <input type="password" id="adminPassword" name="adminPassword" required>
-        <br>
-        <button type="submit">Login as Admin</button>
-    </form>
+    <!-- ADMIN LOGIN -->
+    <div class="section">
+        <h2>Admin Login</h2>
+        <form id="adminLoginForm">
+            <label for="adminUsername">Username: </label>
+            <input type="text" id="adminUsername" name="adminUsername" required>
+            <br>
+            <label for="adminPassword">Password: </label>
+            <input type="password" id="adminPassword" name="adminPassword" required>
+            <br>
+            <button type="submit">Login as Admin</button>
+        </form>
+    </div>
 
     <hr>
 
-    <h2>Customer Registration</h2>
-    <form id="registerForm">
-        <label for="regUsername">Username: </label>
-        <input type="text" id="regUsername" name="username" required>
-        <br>
-        <label for="regPassword">Password: </label>
-        <input type="password" id="regPassword" name="password" required>
-        <br>
-        <button type="submit">Register</button>
-    </form>
+    <!-- CUSTOMER REGISTRATION -->
+    <div class="section">
+        <h2>Customer Registration</h2>
+        <form id="registerForm">
+            <label for="regUsername">Username: </label>
+            <input type="text" id="regUsername" name="username" required>
+            <br>
+            <label for="regPassword">Password: </label>
+            <input type="password" id="regPassword" name="password" required>
+            <br>
+            <!-- Optional: Hidden role field for registration -->
+            <input type="hidden" id="role" value="customer">
+            <button type="submit">Register</button>
+        </form>
+    </div>
 
-    <div id="message" style="color: red; margin-top: 10px;"></div>
+    <!-- SHARED MESSAGE BOX -->
+    <div id="message" class="message"></div>
 
-    <br><br>
-    <button id="backButton">Back to Home</button>
     <br>
-    <p><em>Please contact your Institution or Organization Administration if you wish to apply for <strong>Administrator</strong></em></p>
+    <button id="backButton">Back to Home</button>
+    <br><br>
+    <p>
+        <em>
+            Please contact your Institution or Organization Administration if you wish to apply for <strong>Administrator</strong>
+        </em>
+    </p>
 
     <script src="script.js"></script>
 </body>
