@@ -100,6 +100,7 @@ if (adminLoginForm) {
             const data = await res.json();
 
             if (data.success) {
+                data.role = "admin";
                 if (data.role === "admin") {
                     localStorage.setItem("adminLoggedIn", "true");
                     window.location.href = "orders.html?autoload=true";
