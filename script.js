@@ -11,10 +11,35 @@ document.addEventListener("DOMContentLoaded", () => {
         loadOrders();
     }
 
-    const backBtn = document.getElementById("backButton");
-    if (backBtn) {
+    const backButton = document.getElementById("backButton");
+    if (backButton) {
         backBtn.addEventListener("click", () => {
             window.location.href = "index.html";
+        });
+    }
+    const but1 = document.getElementById("but1");
+    if (but1) {
+        but1.addEventListener("click", () => {
+            window.location.href = "products.html";
+        });
+    }
+    const but2 = document.getElementById("but2");
+    if (but2) {
+        but2.addEventListener("click", () => {
+            window.location.href = "orders.html";
+        });
+    }
+    const loginButton = document.getElementById("loginButton");
+    if (loginButton) {
+        loginButton.addEventListener("click", () => {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            if (username === "admin" && password === "admin") {
+                window.location.href = "orders.html";
+            } else {
+                alert("Invalid credentials. Please try again.");
+            }
         });
     }
 });
