@@ -51,7 +51,7 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
     const password = document.getElementById("password").value.trim();
 
     try {
-        const res = await fetch("/.netlify/functions/db?type=login", {
+        const res = await fetch("/.netlify/functions/db?action=login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, password })
@@ -82,7 +82,7 @@ document.getElementById("adminLoginForm").addEventListener("submit", async (e) =
     const password = document.getElementById("adminPassword").value.trim();
 
     try {
-        const res = await fetch("/.netlify/functions/db?type=login", {
+        const res = await fetch("/.netlify/functions/db?action=login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, password })
@@ -190,7 +190,7 @@ function placeOrder(productId, productName, price) {
         customer_name: customerName
     };
 
-    fetch("/.netlify/functions/db", {
+    fetch("/.netlify/functions/db?action=placeOrder", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
