@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>Admin Dashboard</h1>
+  <button id="logoutBtn">Logout</button>
+  <button id="backButton">Back to Home</button>
+
+  <section>
+    <h2>Orders Summary</h2>
+    <table border="1" cellpadding="8" id="orderSummaryTable">
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Customer</th>
+          <th>Products</th>
+          <th>Status</th>
+          <th>Total Amount</th>
+          <th>Order Date</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Products</h2>
+    <table border="1" cellpadding="8" id="productsTable">
+      <thead>
+        <tr>
+          <th>Product Name</th>
+          <th>Description</th>
+          <th>Price</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Users</h2>
+    <table border="1" cellpadding="8" id="usersTable">
+      <thead>
+        <tr>
+          <th>User ID</th>
+          <th>Username</th>
+          <th>Role</th>
+          <th>Created At</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <script src="admin-dashboard.js"></script>
+</body>
+</html>

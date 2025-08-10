@@ -24,6 +24,12 @@ exports.handler = async (event) => {
       result = res.rows;
     }
 
+    // ==================== GET USERS ====================
+    else if (event.httpMethod === "GET" && action === "getUsers") {
+      const res = await client.query("SELECT user_id, username, role, created_at FROM users ORDER BY user_id ASC");
+      result = res.rows;
+}
+
     // ==================== VIEW ORDERS ====================
     else if (event.httpMethod === "GET" && action === "viewOrders") {
       const res = await client.query(`
@@ -118,4 +124,5 @@ exports.handler = async (event) => {
     await client.end();
   }
 
+  
 };
