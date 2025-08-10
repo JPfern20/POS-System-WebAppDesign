@@ -41,26 +41,36 @@ exports.handler = async (event) => {
       result = res.rows;
     }
 
-    // ==================== USER LOGIN ====================
-    else if (event.httpMethod === "POST" && action === "login") {
-      const body = JSON.parse(event.body || "{}");
-      const { username, password } = body;
+    // ==================== USER LOGIN (including admins) ====================
+else if (event.httpMethod === "POST" && action === "login") {
+  const body = JSON.parse(event.body || "{}");
+  const { username, password } = body;
 
-      if (!username || !password) {
-        return { statusCode: 400, body: JSON.stringify({ error: "Missing username or password" }) };
-      }
+  if (!username || !password) {
+    return { statusCode: 400, body: JSON.stringify({ error: "Missing username or password" }) };
+  }
 
-      const res = await client.query(
-        "SELECT user_id, username, role FROM users WHERE username = $1 AND password = $2",
-        [username, password]
-      );
+  // Try users table
+  let res = await client.query(
+    "SELECT user_id, username, role FROM users WHERE username = $1 AND password = $2",
+    [username, password]
+  );
 
-      if (res.rows.length > 0) {
-        result = { success: true, ...res.rows[0] };
-      } else {
-        return { statusCode: 401, body: JSON.stringify({ success: false, error: "Invalid credentials" }) };
-      }
-    }
+  if (res.rows.length === 0) {
+    // If not found, try admins table (assuming admins table has same schema)
+    res = await client.query(
+      "SELECT admin_id as user_id, username, role FROM admins WHERE username = $1 AND password = $2",
+      [username, password]
+    );
+  }
+
+  if (res.rows.length > 0) {
+    result = { success: true, ...res.rows[0] };
+  } else {
+    return { statusCode: 401, body: JSON.stringify({ success: false, error: "Invalid credentials" }) };
+  }
+}
+
 
     // ==================== USER REGISTRATION ====================
     else if (event.httpMethod === "POST" && action === "registerUser") {
