@@ -95,11 +95,12 @@ if (adminLoginForm) {
 
             if (data.success) {
                 localStorage.setItem("username", username);
-                data.role = "admin";
+                // Use the role from server response to avoid forcing admin always
                 localStorage.setItem("role", data.role || "admin");
                 if (data.role === "admin") {
                     localStorage.setItem("adminLoggedIn", "true");
-                    window.location.href = "orders.html?autoload=true";
+                    // Redirect to admin-dashboard.html instead of orders.html
+                    window.location.href = "admin-dashboard.html";
                 } else {
                     document.getElementById("message").textContent = "Invalid role for this form.";
                 }
@@ -112,6 +113,7 @@ if (adminLoginForm) {
         }
     });
 }
+
 
 // ==================== USER REGISTRATION ====================
 const registerForm = document.getElementById("registerForm");
