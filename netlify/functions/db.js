@@ -102,20 +102,44 @@ exports.handler = async (event) => {
 
     // ==================== PLACE ORDER ====================
     else if (event.httpMethod === "POST" && action === "placeOrder") {
-      const body = JSON.parse(event.body || "{}");
-      const { product_id, quantity, customer_name, customer_id } = body;
+  const body = JSON.parse(event.body || "{}");
+  const { product_id, quantity, customer_name, customer_id } = body;
 
-      if (!product_id || !quantity || !customer_name || !customer_id) {
-        return { statusCode: 400, body: JSON.stringify({ error: "Missing order fields" }) };
-      }
+  if (!product_id || !quantity || !customer_name || !customer_id) {
+    return { statusCode: 400, body: JSON.stringify({ error: "Missing order fields" }) };
+  }
 
-      await client.query(
-        "INSERT INTO orders (product_id, quantity, customer_name, customer_id, status_id, order_date) VALUES ($1, $2, $3, $4, 1, NOW())",
-        [product_id, quantity, customer_name, customer_id]
-      );
+  // 1. Get product price
+  const productRes = await client.query(
+    "SELECT price FROM products WHERE product_id = $1",
+    [product_id]
+  );
+  if (productRes.rows.length === 0) {
+    return { statusCode: 400, body: JSON.stringify({ error: "Product not found" }) };
+  }
+  const price = productRes.rows[0].price;
 
-      result = { success: true, message: "Order placed successfully" };
-    }
+  // 2. Calculate total for the order (assuming single product order)
+  const totalAmount = price * quantity;
+
+  // 3. Insert into orders table
+  const orderInsert = await client.query(
+    `INSERT INTO orders (customerID, total_amount, status_id, order_date)
+     VALUES ($1, $2, 1, NOW())
+     RETURNING order_id`,
+    [customer_id, totalAmount]
+  );
+  const order_id = orderInsert.rows[0].order_id;
+
+  // 4. Insert into order_items table
+  await client.query(
+    `INSERT INTO order_items (order_id, product_id, quantity, price)
+     VALUES ($1, $2, $3, $4)`,
+    [order_id, product_id, quantity, price]
+  );
+
+  result = { success: true, message: "Order placed successfully", order_id };
+}
 
     // ==================== INVALID ACTION ====================
     else {
