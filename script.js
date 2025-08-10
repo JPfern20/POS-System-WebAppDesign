@@ -167,9 +167,10 @@ function loadProducts() {
                         <td>${product.description}</td>
                         <td>$${product.price}</td>
                         <td>
-                            <button onclick="placeOrder('${product.product_id}', '${product.product_name}', ${product.price})">
-                                Order
+                            <button onclick="addToCart('${product.product_id}', '${product.product_name}', ${product.price})">
+                                Add to Cart
                             </button>
+
                         </td>
                     </tr>
                 `;
@@ -237,3 +238,94 @@ function loadOrders() {
         .catch(err => console.error("Error loading orders:", err));
 }
 
+// Load cart from localStorage or empty array
+function getCart() {
+  const cartJSON = localStorage.getItem("cart");
+  return cartJSON ? JSON.parse(cartJSON) : [];
+}
+
+// Save cart to localStorage
+function saveCart(cart) {
+  localStorage.setItem("cart", JSON.stringify(cart));
+}
+
+// Add product to cart
+function addToCart(productId, productName, price) {
+  let cart = getCart();
+
+  // Ask quantity
+  const qty = parseInt(prompt(`Enter quantity for ${productName}:`), 10);
+  if (isNaN(qty) || qty <= 0) {
+    alert("Invalid quantity. Please try again.");
+    return;
+  }
+
+  // Check if product already in cart
+  const existing = cart.find(item => item.product_id === productId);
+  if (existing) {
+    existing.quantity += qty; // Add quantity
+  } else {
+    cart.push({ product_id: productId, product_name: productName, price, quantity: qty });
+  }
+  saveCart(cart);
+  alert(`${qty} x ${productName} added to cart.`);
+}
+
+// Show cart contents and checkout
+function showCart() {
+  let cart = getCart();
+  if (cart.length === 0) {
+    alert("Your cart is empty.");
+    return;
+  }
+
+  let message = "Your Cart:\n";
+  cart.forEach((item, i) => {
+    message += `${i + 1}. ${item.product_name} - Qty: ${item.quantity} - $${item.price}\n`;
+  });
+  message += "\nProceed to checkout?";
+
+  if (confirm(message)) {
+    checkoutCart();
+  }
+}
+
+// Send the cart items to backend to create order and order_items
+async function checkoutCart() {
+  const customerId = localStorage.getItem("user_id");
+  const customerName = localStorage.getItem("username");
+  if (!customerId || !customerName) {
+    alert("Please login first.");
+    window.location.href = "user.html?redirect=products.html";
+    return;
+  }
+
+  const cart = getCart();
+  if (cart.length === 0) {
+    alert("Your cart is empty.");
+    return;
+  }
+
+  try {
+    const res = await fetch("/.netlify/functions/db?action=checkoutCart", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        customer_id: customerId,
+        customer_name: customerName,
+        items: cart
+      })
+    });
+
+    const data = await res.json();
+    if (data.success) {
+      alert(`Order placed successfully! Order ID: ${data.order_id}`);
+      localStorage.removeItem("cart");
+    } else {
+      alert("Failed to place order: " + (data.error || "Unknown error"));
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Error connecting to server.");
+  }
+}

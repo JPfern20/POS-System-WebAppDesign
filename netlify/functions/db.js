@@ -140,6 +140,48 @@ exports.handler = async (event) => {
 
   result = { success: true, message: "Order placed successfully", order_id };
 }
+  //==================== Checkout Cart ====================
+  else if (event.httpMethod === "POST" && action === "checkoutCart") {
+  const body = JSON.parse(event.body || "{}");
+  const { customer_id, customer_name, items } = body;
+
+  if (!customer_id || !customer_name || !Array.isArray(items) || items.length === 0) {
+    return { statusCode: 400, body: JSON.stringify({ error: "Missing order or cart data" }) };
+  }
+
+  // Validate items structure
+  for (const item of items) {
+    if (!item.product_id || !item.quantity || !item.price) {
+      return { statusCode: 400, body: JSON.stringify({ error: "Invalid item in cart" }) };
+    }
+  }
+
+  // Calculate total amount
+  const totalAmount = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  // Insert into orders
+  const orderInsert = await client.query(
+    `INSERT INTO orders (customerID, total_amount, status_id, order_date)
+     VALUES ($1, $2, 1, NOW())
+     RETURNING order_id`,
+    [customer_id, totalAmount]
+  );
+  const order_id = orderInsert.rows[0].order_id;
+
+  // Insert each item into order_items
+  for (const item of items) {
+    await client.query(
+      `INSERT INTO order_items (order_id, product_id, quantity, price)
+       VALUES ($1, $2, $3, $4)`,
+      [order_id, item.product_id, item.quantity, item.price]
+    );
+  }
+
+  result = { success: true, message: "Order placed successfully", order_id };
+}
+
+
+
 
     // ==================== INVALID ACTION ====================
     else {
