@@ -124,7 +124,7 @@ exports.handler = async (event) => {
 
   // 3. Insert into orders table
   const orderInsert = await client.query(
-    `INSERT INTO orders (customerID, total_amount, status_id, order_date)
+    `INSERT INTO orders ("customerID", total_amount, status_id, order_date)
      VALUES ($1, $2, 1, NOW())
      RETURNING order_id`,
     [user_id, totalAmount]
