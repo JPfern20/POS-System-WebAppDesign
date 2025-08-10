@@ -6,19 +6,25 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  // Buttons
-  document.getElementById("logoutBtn").addEventListener("click", () => {
-    localStorage.removeItem("adminLoggedIn");
-    localStorage.removeItem("username");
-    localStorage.removeItem("role");
-    window.location.href = "user.html";
-  });
+  // Setup buttons
+  const logoutBtn = document.getElementById("logoutBtn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("adminLoggedIn");
+      localStorage.removeItem("username");
+      localStorage.removeItem("role");
+      window.location.href = "user.html";
+    });
+  }
 
-  document.getElementById("backButton").addEventListener("click", () => {
-    window.location.href = "index.html";
-  });
+  const backButton = document.getElementById("backButton");
+  if (backButton) {
+    backButton.addEventListener("click", () => {
+      window.location.href = "index.html";
+    });
+  }
 
-  // Load all data
+  // Load all data tables
   loadOrders();
   loadProducts();
   loadUsers();
@@ -28,7 +34,6 @@ function loadOrders() {
   fetch("/.netlify/functions/db?action=viewOrders")
     .then(res => res.json())
     .then(data => {
-      // Group orders by order_id
       const groupedOrders = {};
 
       data.forEach(row => {
@@ -49,13 +54,15 @@ function loadOrders() {
       });
 
       const tbody = document.querySelector("#orderSummaryTable tbody");
+      if (!tbody) return;
       tbody.innerHTML = "";
 
-      // Render each grouped order row with nested products
       Object.values(groupedOrders).forEach(order => {
         const productListHTML = `
           <ul style="padding-left: 15px; margin: 0;">
-            ${order.products.map(p => `<li>Product ID: ${p.product_id} (Qty: ${p.quantity})</li>`).join('')}
+            ${order.products
+              .map(p => `<li>Product ID: ${p.product_id} (Qty: ${p.quantity})</li>`)
+              .join("")}
           </ul>
         `;
 
@@ -71,27 +78,32 @@ function loadOrders() {
         `;
       });
     })
-    .catch(console.error);
+    .catch(err => {
+      console.error("Error loading orders:", err);
+    });
 }
-
 
 function loadProducts() {
   fetch("/.netlify/functions/db?action=getProducts")
     .then(res => res.json())
     .then(data => {
       const tbody = document.querySelector("#productsTable tbody");
+      if (!tbody) return;
       tbody.innerHTML = "";
+
       data.forEach(product => {
         tbody.innerHTML += `
           <tr>
             <td>${product.product_name}</td>
             <td>${product.description}</td>
-            <td>$${product.price}</td>
+            <td>$${product.price.toFixed(2)}</td>
           </tr>
         `;
       });
     })
-    .catch(console.error);
+    .catch(err => {
+      console.error("Error loading products:", err);
+    });
 }
 
 function loadUsers() {
@@ -99,7 +111,9 @@ function loadUsers() {
     .then(res => res.json())
     .then(data => {
       const tbody = document.querySelector("#usersTable tbody");
+      if (!tbody) return;
       tbody.innerHTML = "";
+
       data.forEach(user => {
         tbody.innerHTML += `
           <tr>
@@ -111,5 +125,7 @@ function loadUsers() {
         `;
       });
     })
-    .catch(console.error);
+    .catch(err => {
+      console.error("Error loading users:", err);
+    });
 }
