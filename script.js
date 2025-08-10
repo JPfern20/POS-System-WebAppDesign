@@ -3,6 +3,7 @@
 // Redirect based on login type
 document.addEventListener("DOMContentLoaded", () => {
     const currentPage = window.location.pathname;
+    const params = new URLSearchParams(window.location.search);
 
     if (currentPage.includes("products.html")) {
         loadProducts();
@@ -11,6 +12,8 @@ document.addEventListener("DOMContentLoaded", () => {
          if (params.get("autoload") === "true" || localStorage.getItem("adminLoggedIn") === "true") {
             loadOrders();
     }
+
+}
 
     const backButton = document.getElementById("backButton");
     if (backButton) {
