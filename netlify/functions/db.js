@@ -24,53 +24,52 @@ exports.handler = async (event) => {
       result = res.rows;
     }
 
-    // ==================== GET Customers ====================
+    // ==================== GET CUSTOMERS ====================
     else if (event.httpMethod === "GET" && action === "getUsers") {
       const res = await client.query("SELECT user_id, username, role, created_at FROM users ORDER BY user_id ASC");
       result = res.rows;
-}
+    }
 
     // ==================== VIEW ORDERS ====================
-    const res = await client.query(`
-      SELECT o.order_id, o.customer_id, o.customer_name, o.product_id, o.quantity, s.status_name, o.order_date
-      FROM orders o
-      JOIN status s ON o.status_id = s.status_id
-      ORDER BY o.order_date DESC
-`);
-result = res.rows;
-
+    else if (event.httpMethod === "GET" && action === "viewOrders") {
+      const res = await client.query(`
+        SELECT o.order_id, o.customer_id, o.customer_name, o.product_id, o.quantity, s.status_name, o.order_date
+        FROM orders o
+        JOIN status s ON o.status_id = s.status_id
+        ORDER BY o.order_date DESC
+      `);
+      result = res.rows;
     }
 
     // ==================== USER LOGIN (including admins) ====================
-else if (event.httpMethod === "POST" && action === "login") {
-  const body = JSON.parse(event.body || "{}");
-  const { username, password } = body;
+    else if (event.httpMethod === "POST" && action === "login") {
+      const body = JSON.parse(event.body || "{}");
+      const { username, password } = body;
 
-  if (!username || !password) {
-    return { statusCode: 400, body: JSON.stringify({ error: "Missing username or password" }) };
-  }
+      if (!username || !password) {
+        return { statusCode: 400, body: JSON.stringify({ error: "Missing username or password" }) };
+      }
 
-  // Try users table
-  let res = await client.query(
-    "SELECT user_id, username, role FROM users WHERE username = $1 AND password = $2",
-    [username, password]
-  );
+      // Try users table
+      let res = await client.query(
+        "SELECT user_id, username, role FROM users WHERE username = $1 AND password = $2",
+        [username, password]
+      );
 
-  if (res.rows.length === 0) {
-    // If not found, try admins table (assuming admins table has same schema)
-    res = await client.query(
-      "SELECT admin_id as user_id, username, role FROM admins WHERE username = $1 AND password = $2",
-      [username, password]
-    );
-  }
+      if (res.rows.length === 0) {
+        // Try admins table
+        res = await client.query(
+          "SELECT admin_id as user_id, username, role FROM admins WHERE username = $1 AND password = $2",
+          [username, password]
+        );
+      }
 
-  if (res.rows.length > 0) {
-    result = { success: true, ...res.rows[0] };
-  } else {
-    return { statusCode: 401, body: JSON.stringify({ success: false, error: "Invalid credentials" }) };
-  }
-}
-
+      if (res.rows.length > 0) {
+        result = { success: true, ...res.rows[0] };
+      } else {
+        return { statusCode: 401, body: JSON.stringify({ success: false, error: "Invalid credentials" }) };
+      }
+    }
 
     // ==================== USER REGISTRATION ====================
     else if (event.httpMethod === "POST" && action === "registerUser") {
@@ -101,18 +100,37 @@ else if (event.httpMethod === "POST" && action === "login") {
 
     // ==================== PLACE ORDER ====================
     else if (event.httpMethod === "POST" && action === "placeOrder") {
-  const body = JSON.parse(event.body || "{}");
-  const { product_id, quantity, customer_name, customer_id } = body;
+      const body = JSON.parse(event.body || "{}");
+      const { product_id, quantity, customer_name, customer_id } = body;
 
-  if (!product_id || !quantity || !customer_name || !customer_id) {
-    return { statusCode: 400, body: JSON.stringify({ error: "Missing order fields" }) };
+      if (!product_id || !quantity || !customer_name || !customer_id) {
+        return { statusCode: 400, body: JSON.stringify({ error: "Missing order fields" }) };
+      }
+
+      await client.query(
+        "INSERT INTO orders (product_id, quantity, customer_name, customer_id, status_id, order_date) VALUES ($1, $2, $3, $4, 1, NOW())",
+        [product_id, quantity, customer_name, customer_id]
+      );
+
+      result = { success: true, message: "Order placed successfully" };
+    }
+
+    // ==================== INVALID ACTION ====================
+    else {
+      return { statusCode: 400, body: JSON.stringify({ error: "Invalid action" }) };
+    }
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify(result)
+    };
+
+  } catch (err) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: err.message })
+    };
+  } finally {
+    await client.end();
   }
-
-  await client.query(
-    "INSERT INTO orders (product_id, quantity, customer_name, customer_id, status_id, order_date) VALUES ($1, $2, $3, $4, 1, NOW())",
-    [product_id, quantity, customer_name, customer_id]
-  );
-
-  result = { success: true, message: "Order placed successfully" };
-}
-
+};
