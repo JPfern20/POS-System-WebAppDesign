@@ -22,7 +22,13 @@
         </tbody>
     </table>
     <br>
-    <button onclick="showCart()">View Cart / Checkout</button>
+    <button onclick="addToCart('${product.product_id}', '${product.product_name}', ${product.price})">
+  Add to Cart
+</button>
+
+    <br>
+    <button onclick="checkout()">Checkout</button>
+
     <br>
     <button id="backButton">Back to Home</button>
     <script src="script.js"></script>

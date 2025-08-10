@@ -329,3 +329,67 @@ async function checkoutCart() {
     alert("Error connecting to server.");
   }
 }
+
+// Initialize or get cart from localStorage
+function getCart() {
+  return JSON.parse(localStorage.getItem("cart") || "[]");
+}
+
+function saveCart(cart) {
+  localStorage.setItem("cart", JSON.stringify(cart));
+}
+
+// Add product to cart
+function addToCart(productId, productName, price) {
+  const qty = parseInt(prompt(`Enter quantity for ${productName}:`), 10);
+  if (isNaN(qty) || qty <= 0) {
+    alert("Invalid quantity. Please try again.");
+    return;
+  }
+
+  let cart = getCart();
+  const existingItem = cart.find(item => item.product_id === productId);
+  if (existingItem) {
+    existingItem.quantity += qty;
+  } else {
+    cart.push({ product_id: productId, quantity: qty });
+  }
+  saveCart(cart);
+  alert(`${qty} x ${productName} added to cart.`);
+}
+
+// Checkout cart
+async function checkout() {
+  const user_id = localStorage.getItem("user_id");
+  if (!user_id) {
+    alert("Please login first.");
+    window.location.href = "user.html?redirect=products.html";
+    return;
+  }
+
+  const cart = getCart();
+  if (cart.length === 0) {
+    alert("Cart is empty.");
+    return;
+  }
+
+  try {
+    const res = await fetch("/.netlify/functions/db?action=checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user_id, cart }),
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      alert("Checkout successful! Your order ID: " + data.order_id);
+      localStorage.removeItem("cart"); // clear cart after checkout
+      // Optionally redirect or update UI
+    } else {
+      alert("Failed to checkout: " + (data.error || "Unknown error"));
+    }
+  } catch (err) {
+    console.error("Checkout error:", err);
+    alert("Error connecting to server.");
+  }
+}
