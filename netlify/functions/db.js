@@ -25,11 +25,16 @@ exports.handler = async (event) => {
     }
 
     // ==================== VIEW ORDERS ====================
-    else if (event.httpMethod === "GET" && action === "viewOrders") {
-      const res = await client.query("SELECT * FROM orders ORDER BY order_date DESC");
+     else if (event.httpMethod === "GET" && action === "viewOrders") {
+      const res = await client.query(`
+        SELECT o.order_id, o.product_id, o.quantity, o.customer_name, o.order_date,
+               s.status_name
+        FROM orders o
+        JOIN status s ON o.status_id = s.status_id
+        ORDER BY o.order_date DESC
+      `);
       result = res.rows;
     }
-
     // ==================== USER LOGIN ====================
     else if (event.httpMethod === "GET" && action === "login") {
       const { username, password } = params;
@@ -66,10 +71,12 @@ exports.handler = async (event) => {
       if (!product_id || !quantity || !customer_name) {
         return { statusCode: 400, body: JSON.stringify({ error: "Missing order fields" }) };
       }
-
+      // Default na pending pag-order
+      const finalStatusId = status_id || 1; // Default to 'Pending' status if not provided
+      
       await client.query(
-        "INSERT INTO orders (product_id, quantity, customer_name, created_at) VALUES ($1, $2, $3, NOW())",
-        [product_id, quantity, customer_name]
+        "INSERT INTO orders (product_id, quantity, customer_name, status_id, order_date) VALUES ($1, $2, $3, $4, NOW())",
+        [product_id, quantity, customer_name, finalStatusId]
       );
 
       result = { success: true, message: "Order placed successfully" };
