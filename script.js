@@ -104,6 +104,40 @@ document.getElementById("adminLoginForm").addEventListener("submit", async (e) =
         document.getElementById("message").textContent = "Error connecting to server.";
     }
 });
+// User Registration
+document.getElementById("registerForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const username = document.getElementById("regUsername").value.trim();
+    const password = document.getElementById("regPassword").value.trim();
+    const role = document.getElementById("role").value.trim() || "customer"; // default to customer
+
+    if (!username || !password) {
+        document.getElementById("message").textContent = "Username and password are required.";
+        return;
+    }
+
+    try {
+        const res = await fetch("/.netlify/functions/db?action=registerUser", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password, role })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+            document.getElementById("message").textContent = "User registered successfully!";
+        } else {
+            document.getElementById("message").textContent = data.error || "Registration failed.";
+        }
+    } catch (err) {
+        console.error(err);
+        document.getElementById("message").textContent = "Error connecting to server.";
+    }
+});
+
+
 
 // Back Button
 document.getElementById("backButton").addEventListener("click", () => {

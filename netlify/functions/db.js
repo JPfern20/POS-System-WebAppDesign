@@ -11,14 +11,13 @@ exports.handler = async (event) => {
   });
 
   let result;
+  const params = event.queryStringParameters || {};
+  const action = params.action;
 
   try {
     await client.connect();
 
-    const params = event.queryStringParameters || {};
-    const action = params.action;
-
-    // ==================== PRODUCTS ====================
+    // ==================== GET PRODUCTS ====================
     if (event.httpMethod === "GET" && action === "getProducts") {
       const res = await client.query("SELECT * FROM products ORDER BY product_id ASC");
       result = res.rows;
@@ -36,8 +35,9 @@ exports.handler = async (event) => {
     }
 
     // ==================== USER LOGIN ====================
-    else if (event.httpMethod === "GET" && action === "login") {
-      const { username, password } = params;
+    else if (event.httpMethod === "POST" && action === "login") {
+      const body = JSON.parse(event.body || "{}");
+      const { username, password } = body;
 
       if (!username || !password) {
         return { statusCode: 400, body: JSON.stringify({ error: "Missing username or password" }) };
@@ -49,9 +49,9 @@ exports.handler = async (event) => {
       );
 
       if (res.rows.length > 0) {
-        result = { success: true, user: res.rows[0] };
+        result = { success: true, ...res.rows[0] };
       } else {
-        return { statusCode: 401, body: JSON.stringify({ error: "Invalid credentials" }) };
+        return { statusCode: 401, body: JSON.stringify({ success: false, error: "Invalid credentials" }) };
       }
     }
 
@@ -64,10 +64,8 @@ exports.handler = async (event) => {
         return { statusCode: 400, body: JSON.stringify({ error: "Username and password are required" }) };
       }
 
-      // Default role to "customer" if not provided
       const userRole = role || "customer";
 
-      // Check if username already exists
       const checkUser = await client.query(
         "SELECT user_id FROM users WHERE username = $1",
         [username]
@@ -82,26 +80,6 @@ exports.handler = async (event) => {
       );
 
       result = { success: true, message: "User registered successfully" };
-    }
-
-    // ==================== ADMIN LOGIN ====================
-    else if (event.httpMethod === "GET" && action === "adminLogin") {
-      const { adminUsername, adminPassword } = params;
-
-      if (!adminUsername || !adminPassword) {
-        return { statusCode: 400, body: JSON.stringify({ error: "Missing admin username or password" }) };
-      }
-
-      const res = await client.query(
-        "SELECT admin_id, username FROM admins WHERE username = $1 AND password = $2",
-        [adminUsername, adminPassword]
-      );
-
-      if (res.rows.length > 0) {
-        result = { success: true, admin: res.rows[0] };
-      } else {
-        return { statusCode: 401, body: JSON.stringify({ error: "Invalid admin credentials" }) };
-      }
     }
 
     // ==================== PLACE ORDER ====================
@@ -121,7 +99,6 @@ exports.handler = async (event) => {
       result = { success: true, message: "Order placed successfully" };
     }
 
-    // ==================== INVALID ACTION ====================
     else {
       return { statusCode: 400, body: JSON.stringify({ error: "Invalid action" }) };
     }
