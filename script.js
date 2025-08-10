@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const but2 = document.getElementById("but2");
     if (but2) {
         but2.addEventListener("click", () => {
-            window.location.href = "orders.html";
+            window.location.href = "user.html";
         });
     }
     const loginButton = document.getElementById("loginButton");
@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Fetch and display products
 function loadProducts() {
-    fetch("/.netlify/functions/db?type=viewProducts")
+    fetch("/.netlify/functions/db?action=getProducts")
         .then(res => res.json())
         .then(data => {
             const table = document.getElementById("productList");
@@ -100,7 +100,7 @@ function placeOrder(productName, price) {
 
 // Fetch and display orders (Admin)
 function loadOrders() {
-    fetch("/.netlify/functions/db?type=viewOrders")
+    fetch("/.netlify/functions/db?action=viewOrders")
         .then(res => res.json())
         .then(data => {
             const table = document.getElementById("orderList");
