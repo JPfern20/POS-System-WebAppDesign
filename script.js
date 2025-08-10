@@ -33,15 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const loginButton = document.getElementById("loginButton");
     if (loginButton) {
         loginButton.addEventListener("click", () => {
-            const username = document.getElementById("username").value;
-            const password = document.getElementById("password").value;
-
-            if (username === "admin" && password === "admin") {
-                localStorage.setItem("adminLoggedIn", "true");
-                window.location.href = "orders.html?autoload=true";
-            } else {
-                alert("Invalid credentials. Please try again.");
-            }
+           window.location.href = "user.html?redirect=" + encodeURIComponent(currentPage);
         });
     }
 });
