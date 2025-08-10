@@ -59,6 +59,7 @@ if (loginForm) {
             if (data.success) {
                 localStorage.setItem("username", username);
                 localStorage.setItem("role", data.role || "customer");
+                localStorage.setItem("user_id", data.user_id);
                 document.getElementById("message").textContent = "Login successful!";
                 if (data.role === "customer") {
                     window.location.href = "products.html";
@@ -179,22 +180,26 @@ function loadProducts() {
 
 // ==================== PLACE ORDER ====================
 function placeOrder(productId, productName, price) {
-    if (!localStorage.getItem("username")) {
+    const customerName = localStorage.getItem("username");
+    const customerId = localStorage.getItem("user_id");
+
+    if (!customerName || !customerId) {
         window.location.href = "user.html?redirect=products.html";
         return;
     }
-    const customerName = localStorage.getItem("username");
+
     const qty = parseInt(prompt(`Enter quantity for ${productName}:`), 10);
 
-    if (!customerName || isNaN(qty) || qty <= 0) {
-        alert("Invalid input. Please try again.");
+    if (isNaN(qty) || qty <= 0) {
+        alert("Invalid quantity. Please try again.");
         return;
     }
 
     const orderData = {
         product_id: productId,
         quantity: qty,
-        customer_name: customerName
+        customer_name: customerName,
+        customer_id: customerId   // <-- send customer_id as well
     };
 
     fetch("/.netlify/functions/db?action=placeOrder", {
@@ -202,12 +207,13 @@ function placeOrder(productId, productName, price) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(orderData)
     })
-        .then(res => res.json())
-        .then(res => {
-            alert(res.message || "Order placed successfully!");
-        })
-        .catch(err => console.error("Error placing order:", err));
+    .then(res => res.json())
+    .then(res => {
+        alert(res.message || "Order placed successfully!");
+    })
+    .catch(err => console.error("Error placing order:", err));
 }
+
 
 // ==================== FETCH ORDERS (ADMIN) ====================
 function loadOrders() {
@@ -220,10 +226,9 @@ function loadOrders() {
                 table.innerHTML += `
                     <tr>
                         <td>${order.order_id}</td>
-                        <td>${order.customer_name}</td>
-                        <td>${order.products}</td>
-                        <td>${order.status}</td>
-                        <td>P${order.total_amount}</td>
+                        <td>${order.customer_id} - ${order.customer_name}</td>
+                        <td>${order.product_id} (Qty: ${order.quantity})</td>
+                        <td>${order.status_name}</td>
                         <td>${order.order_date}</td>
                     </tr>
                 `;
@@ -231,3 +236,4 @@ function loadOrders() {
         })
         .catch(err => console.error("Error loading orders:", err));
 }
+

@@ -31,14 +31,14 @@ exports.handler = async (event) => {
 }
 
     // ==================== VIEW ORDERS ====================
-    else if (event.httpMethod === "GET" && action === "viewOrders") {
-      const res = await client.query(`
-        SELECT o.*, s.status_name
-        FROM orders o
-        JOIN status s ON o.status_id = s.status_id
-        ORDER BY o.order_date DESC
-      `);
-      result = res.rows;
+    const res = await client.query(`
+      SELECT o.order_id, o.customer_id, o.customer_name, o.product_id, o.quantity, s.status_name, o.order_date
+      FROM orders o
+      JOIN status s ON o.status_id = s.status_id
+      ORDER BY o.order_date DESC
+`);
+result = res.rows;
+
     }
 
     // ==================== USER LOGIN (including admins) ====================
@@ -101,38 +101,18 @@ else if (event.httpMethod === "POST" && action === "login") {
 
     // ==================== PLACE ORDER ====================
     else if (event.httpMethod === "POST" && action === "placeOrder") {
-      const body = JSON.parse(event.body || "{}");
-      const { product_id, quantity, customer_name } = body;
+  const body = JSON.parse(event.body || "{}");
+  const { product_id, quantity, customer_name, customer_id } = body;
 
-      if (!product_id || !quantity || !customer_name) {
-        return { statusCode: 400, body: JSON.stringify({ error: "Missing order fields" }) };
-      }
-
-      await client.query(
-        "INSERT INTO orders (product_id, quantity, customer_name, status_id, order_date) VALUES ($1, $2, $3, 1, NOW())",
-        [product_id, quantity, customer_name]
-      );
-
-      result = { success: true, message: "Order placed successfully" };
-    }
-
-    else {
-      return { statusCode: 400, body: JSON.stringify({ error: "Invalid action" }) };
-    }
-
-    return {
-      statusCode: 200,
-      body: JSON.stringify(result)
-    };
-
-  } catch (err) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: err.message })
-    };
-  } finally {
-    await client.end();
+  if (!product_id || !quantity || !customer_name || !customer_id) {
+    return { statusCode: 400, body: JSON.stringify({ error: "Missing order fields" }) };
   }
 
-  
-};
+  await client.query(
+    "INSERT INTO orders (product_id, quantity, customer_name, customer_id, status_id, order_date) VALUES ($1, $2, $3, $4, 1, NOW())",
+    [product_id, quantity, customer_name, customer_id]
+  );
+
+  result = { success: true, message: "Order placed successfully" };
+}
+
