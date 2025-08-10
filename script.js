@@ -58,9 +58,9 @@ if (loginForm) {
 
             if (data.success) {
                 localStorage.setItem("username", username);
-                localStorage.setItem("role", data.role || "user");
+                localStorage.setItem("role", data.role || "customer");
                 document.getElementById("message").textContent = "Login successful!";
-                if (data.role === "user") {
+                if (data.role === "customer") {
                     window.location.href = "products.html";
                 } else {
                     document.getElementById("message").textContent = "Invalid role for this form.";

@@ -24,7 +24,7 @@ exports.handler = async (event) => {
       result = res.rows;
     }
 
-    // ==================== GET USERS ====================
+    // ==================== GET Customers ====================
     else if (event.httpMethod === "GET" && action === "getUsers") {
       const res = await client.query("SELECT user_id, username, role, created_at FROM users ORDER BY user_id ASC");
       result = res.rows;
