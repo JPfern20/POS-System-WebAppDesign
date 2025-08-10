@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const backButton = document.getElementById("backButton");
     if (backButton) {
-        backBtn.addEventListener("click", () => {
+        backButton.addEventListener("click", () => {
             window.location.href = "index.html";
         });
     }
@@ -58,7 +58,7 @@ function loadProducts() {
                         <td>${product.description}</td>
                         <td>$${product.price}</td>
                         <td>
-                            <button onclick="placeOrder('${product.name}', ${product.price})">
+                            <button onclick="placeOrder('${product.prodcut_name}', ${product.price})">
                                 Order
                             </button>
                         </td>

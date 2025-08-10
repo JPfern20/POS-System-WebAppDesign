@@ -20,7 +20,7 @@ exports.handler = async (event) => {
 
     // ==================== PRODUCTS ====================
     if (event.httpMethod === "GET" && action === "getProducts") {
-      const res = await client.query("SELECT * FROM products ORDER BY id ASC");
+      const res = await client.query("SELECT * FROM products ORDER BY product_id ASC");
       result = res.rows;
     }
 
