@@ -8,7 +8,8 @@ document.addEventListener("DOMContentLoaded", () => {
         loadProducts();
     }
     if (currentPage.includes("orders.html")) {
-        loadOrders();
+         if (params.get("autoload") === "true" || localStorage.getItem("adminLoggedIn") === "true") {
+            loadOrders();
     }
 
     const backButton = document.getElementById("backButton");
@@ -75,6 +76,7 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
 });
 
 // Admin Login
+// Admin Login
 document.getElementById("adminLoginForm").addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -92,7 +94,11 @@ document.getElementById("adminLoginForm").addEventListener("submit", async (e) =
 
         if (data.success) {
             if (data.role === "admin") {
-                window.location.href = "orders.html"; // admin page
+                // Save session info for possible future checks
+                localStorage.setItem("adminLoggedIn", "true");
+
+                // Redirect to orders page with a query param to auto-load
+                window.location.href = "orders.html?autoload=true";
             } else {
                 document.getElementById("message").textContent = "Invalid role for this form.";
             }
@@ -104,6 +110,7 @@ document.getElementById("adminLoginForm").addEventListener("submit", async (e) =
         document.getElementById("message").textContent = "Error connecting to server.";
     }
 });
+
 // User Registration
 document.getElementById("registerForm").addEventListener("submit", async (e) => {
     e.preventDefault();

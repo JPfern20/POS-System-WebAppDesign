@@ -2,26 +2,70 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>View Products</title>
+    <title>Login & Registration</title>
     <link rel="stylesheet" type="text/css" href="style.css">
+    <style>
+        body {
+            text-align: center;
+        }
+        form {
+            display: inline-block;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        button {
+            display: block;
+            margin: 10px auto;
+        }
+    </style>
 </head>
 <body>
-    <h1>Available Orders</h1>
-    <table border="1" cellpadding="10">
-        <thead>
-            <tr>
-                <th>Product</th>
-                <th>Description</th>
-                <th>Price</th>
-                <th>Order</th>
-            </tr>
-        </thead>
-        <tbody id="orderList">
-            <!-- Products will be loaded here via script.js -->
-        </tbody>
-    </table>
-    <br>
+    <h1><strong>User and Admin Login</strong></h1>
+
+    <h2>User Login</h2>
+    <form id="loginForm">
+        <label for="username">Username: </label>
+        <input type="text" id="username" name="username" required>
+        <br>
+        <label for="password">Password: </label>
+        <input type="password" id="password" name="password" required>
+        <br>
+        <button type="submit">Login</button>
+    </form>
+
+    <hr>
+
+    <h2>Admin Login</h2>
+    <form id="adminLoginForm">
+        <label for="adminUsername">Username: </label>
+        <input type="text" id="adminUsername" name="adminUsername" required>
+        <br>
+        <label for="adminPassword">Password: </label>
+        <input type="password" id="adminPassword" name="adminPassword" required>
+        <br>
+        <button type="submit">Login as Admin</button>
+    </form>
+
+    <hr>
+
+    <h2>Customer Registration</h2>
+    <form id="registerForm">
+        <label for="regUsername">Username: </label>
+        <input type="text" id="regUsername" name="username" required>
+        <br>
+        <label for="regPassword">Password: </label>
+        <input type="password" id="regPassword" name="password" required>
+        <br>
+        <button type="submit">Register</button>
+    </form>
+
+    <div id="message" style="color: red; margin-top: 10px;"></div>
+
+    <br><br>
     <button id="backButton">Back to Home</button>
+    <br>
+    <p><em>Please contact your Institution or Organization Administration if you wish to apply for <strong>Administrator</strong></em></p>
+
     <script src="script.js"></script>
 </body>
 </html>
