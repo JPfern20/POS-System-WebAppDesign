@@ -92,7 +92,7 @@ document.getElementById("adminLoginForm").addEventListener("submit", async (e) =
 
         if (data.success) {
             if (data.role === "admin") {
-                window.location.href = "admin.html"; // admin page
+                window.location.href = "orders.html"; // admin page
             } else {
                 document.getElementById("message").textContent = "Invalid role for this form.";
             }
