@@ -1,34 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <title>View Products</title>
-    <link rel="stylesheet" type="text/css" href="style.css" />
+  <meta charset="UTF-8" />
+  <title>View Products</title>
+  <link rel="stylesheet" type="text/css" href="style.css" />
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 80%;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #333;
+      padding: 8px 12px;
+      text-align: left;
+    }
+    h2 {
+      margin-top: 40px;
+    }
+    button {
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-    <h1>Available Products</h1>
-    <table border="1" cellpadding="10">
-        <thead>
-            <tr>
-                <th>Product</th>
-                <th>Description</th>
-                <th>Price</th>
-                <th>Order</th>
-            </tr>
-        </thead>
-        <tbody id="productList">
-            <!-- Products will be loaded here via script.js -->
-        </tbody>
-    </table>
+  <h1>Available Products</h1>
 
-    <br />
-    <!-- Cart and checkout controls -->
-    <button id="viewCartButton" onclick="viewCart()">View Cart</button>
-    <button id="checkoutButton" onclick="checkout()">Checkout</button>
+  <!-- Products Table -->
+  <table>
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Description</th>
+        <th>Price</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="productList">
+      <!-- Loaded dynamically -->
+    </tbody>
+  </table>
 
-    <br /><br />
-    <button id="backButton">Back to Home</button>
+  <!-- Cart Summary -->
+  <h2>Your Cart</h2>
+  <table id="cartTable">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Quantity</th>
+        <th>Unit Price</th>
+        <th>Subtotal</th>
+        <th>Remove</th>
+      </tr>
+    </thead>
+    <tbody id="cartBody">
+      <!-- Cart items added dynamically -->
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="3" style="text-align: right;"><strong>Total:</strong></td>
+        <td id="cartTotal">$0.00</td>
+        <td></td>
+      </tr>
+    </tfoot>
+  </table>
 
-    <script src="script.js"></script>
+  <!-- Checkout Button -->
+  <button id="checkoutBtn" onclick="checkout()">Checkout</button>
+
+  <br /><br />
+  <button id="backButton">Back to Home</button>
+
+  <script src="script.js"></script>
 </body>
 </html>

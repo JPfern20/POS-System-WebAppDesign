@@ -28,16 +28,44 @@ function loadOrders() {
   fetch("/.netlify/functions/db?action=viewOrders")
     .then(res => res.json())
     .then(data => {
+      // Group orders by order_id
+      const groupedOrders = {};
+
+      data.forEach(row => {
+        if (!groupedOrders[row.order_id]) {
+          groupedOrders[row.order_id] = {
+            order_id: row.order_id,
+            customer_name: row.customer_name,
+            status_name: row.status_name,
+            total_amount: row.total_amount,
+            order_date: row.order_date,
+            products: []
+          };
+        }
+        groupedOrders[row.order_id].products.push({
+          product_id: row.product_id,
+          quantity: row.quantity
+        });
+      });
+
       const tbody = document.querySelector("#orderSummaryTable tbody");
       tbody.innerHTML = "";
-      data.forEach(order => {
+
+      // Render each grouped order row with nested products
+      Object.values(groupedOrders).forEach(order => {
+        const productListHTML = `
+          <ul style="padding-left: 15px; margin: 0;">
+            ${order.products.map(p => `<li>Product ID: ${p.product_id} (Qty: ${p.quantity})</li>`).join('')}
+          </ul>
+        `;
+
         tbody.innerHTML += `
           <tr>
             <td>${order.order_id}</td>
             <td>${order.customer_name}</td>
-            <td>${order.products || "-"}</td>
+            <td>${productListHTML}</td>
             <td>${order.status_name}</td>
-            <td>P${order.total_amount || "-"}</td>
+            <td>$${order.total_amount.toFixed(2)}</td>
             <td>${new Date(order.order_date).toLocaleString()}</td>
           </tr>
         `;
@@ -45,6 +73,7 @@ function loadOrders() {
     })
     .catch(console.error);
 }
+
 
 function loadProducts() {
   fetch("/.netlify/functions/db?action=getProducts")
