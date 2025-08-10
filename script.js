@@ -1,38 +1,35 @@
-// script.js
+// ==================== SCRIPT.JS ====================
 
-// Redirect based on login type
+// Page-specific logic on load
 document.addEventListener("DOMContentLoaded", () => {
     const currentPage = window.location.pathname;
     const params = new URLSearchParams(window.location.search);
 
+    // Products page → load products
     if (currentPage.includes("products.html")) {
         loadProducts();
     }
+
+    // Orders page → load orders only if admin
     if (currentPage.includes("orders.html")) {
-         if (params.get("autoload") === "true" || localStorage.getItem("adminLoggedIn") === "true") {
+        if (localStorage.getItem("adminLoggedIn") === "true" || params.get("autoload") === "true") {
             loadOrders();
-    }
-
-}
-
-    const backButton = document.getElementById("backButton");
-    if (backButton) {
-        backButton.addEventListener("click", () => {
-            window.location.href = "index.html";
-        });
-    }
-    const but1 = document.getElementById("but1");
-    if (but1) {
-        but1.addEventListener("click", () => {
-            window.location.href = "products.html";
-        });
-    }
-    const but2 = document.getElementById("but2");
-    if (but2) {
-        but2.addEventListener("click", () => {
+        } else {
+            alert("Please log in as admin to view orders.");
             window.location.href = "user.html";
-        });
+        }
     }
+
+    // Navigation buttons
+    const backButton = document.getElementById("backButton");
+    if (backButton) backButton.addEventListener("click", () => window.location.href = "index.html");
+
+    const but1 = document.getElementById("but1");
+    if (but1) but1.addEventListener("click", () => window.location.href = "products.html");
+
+    const but2 = document.getElementById("but2");
+    if (but2) but2.addEventListener("click", () => window.location.href = "user.html");
+
     const loginButton = document.getElementById("loginButton");
     if (loginButton) {
         loginButton.addEventListener("click", () => {
@@ -40,121 +37,123 @@ document.addEventListener("DOMContentLoaded", () => {
             const password = document.getElementById("password").value;
 
             if (username === "admin" && password === "admin") {
-                window.location.href = "orders.html";
+                localStorage.setItem("adminLoggedIn", "true");
+                window.location.href = "orders.html?autoload=true";
             } else {
                 alert("Invalid credentials. Please try again.");
             }
         });
     }
 });
-// User Login
-document.getElementById("loginForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
 
-    const username = document.getElementById("username").value.trim();
-    const password = document.getElementById("password").value.trim();
+// ==================== USER LOGIN ====================
+const loginForm = document.getElementById("loginForm");
+if (loginForm) {
+    loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-    try {
-        const res = await fetch("/.netlify/functions/db?action=login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, password })
-        });
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value.trim();
 
-        const data = await res.json();
+        try {
+            const res = await fetch("/.netlify/functions/db?action=login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password })
+            });
 
-        if (data.success) {
-            if (data.role === "user") {
-                window.location.href = "products.html"; // user product page
+            const data = await res.json();
+
+            if (data.success) {
+                localStorage.setItem("username", username);
+                if (data.role === "user") {
+                    window.location.href = "products.html";
+                } else {
+                    document.getElementById("message").textContent = "Invalid role for this form.";
+                }
             } else {
-                document.getElementById("message").textContent = "Invalid role for this form.";
+                document.getElementById("message").textContent = data.message || "Login failed.";
             }
-        } else {
-            document.getElementById("message").textContent = data.message || "Login failed.";
+        } catch (err) {
+            console.error(err);
+            document.getElementById("message").textContent = "Error connecting to server.";
         }
-    } catch (err) {
-        console.error(err);
-        document.getElementById("message").textContent = "Error connecting to server.";
-    }
-});
+    });
+}
 
-// Admin Login
-// Admin Login
-document.getElementById("adminLoginForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
+// ==================== ADMIN LOGIN ====================
+const adminLoginForm = document.getElementById("adminLoginForm");
+if (adminLoginForm) {
+    adminLoginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-    const username = document.getElementById("adminUsername").value.trim();
-    const password = document.getElementById("adminPassword").value.trim();
+        const username = document.getElementById("adminUsername").value.trim();
+        const password = document.getElementById("adminPassword").value.trim();
 
-    try {
-        const res = await fetch("/.netlify/functions/db?action=login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, password })
-        });
+        try {
+            const res = await fetch("/.netlify/functions/db?action=login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password })
+            });
 
-        const data = await res.json();
+            const data = await res.json();
 
-        if (data.success) {
-            if (data.role === "admin") {
-                // Save session info for possible future checks
-                localStorage.setItem("adminLoggedIn", "true");
-
-                // Redirect to orders page with a query param to auto-load
-                window.location.href = "orders.html?autoload=true";
+            if (data.success) {
+                if (data.role === "admin") {
+                    localStorage.setItem("adminLoggedIn", "true");
+                    window.location.href = "orders.html?autoload=true";
+                } else {
+                    document.getElementById("message").textContent = "Invalid role for this form.";
+                }
             } else {
-                document.getElementById("message").textContent = "Invalid role for this form.";
+                document.getElementById("message").textContent = data.message || "Login failed.";
             }
-        } else {
-            document.getElementById("message").textContent = data.message || "Login failed.";
+        } catch (err) {
+            console.error(err);
+            document.getElementById("message").textContent = "Error connecting to server.";
         }
-    } catch (err) {
-        console.error(err);
-        document.getElementById("message").textContent = "Error connecting to server.";
-    }
-});
+    });
+}
 
-// User Registration
-document.getElementById("registerForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
+// ==================== USER REGISTRATION ====================
+const registerForm = document.getElementById("registerForm");
+if (registerForm) {
+    registerForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-    const username = document.getElementById("regUsername").value.trim();
-    const password = document.getElementById("regPassword").value.trim();
-    const role = document.getElementById("role").value.trim() || "customer"; // default to customer
+        const username = document.getElementById("regUsername").value.trim();
+        const password = document.getElementById("regPassword").value.trim();
+        const roleElement = document.getElementById("role");
+        const role = roleElement ? roleElement.value.trim() : "customer";
 
-    if (!username || !password) {
-        document.getElementById("message").textContent = "Username and password are required.";
-        return;
-    }
-
-    try {
-        const res = await fetch("/.netlify/functions/db?action=registerUser", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, password, role })
-        });
-
-        const data = await res.json();
-
-        if (data.success) {
-            document.getElementById("message").textContent = "User registered successfully!";
-        } else {
-            document.getElementById("message").textContent = data.error || "Registration failed.";
+        if (!username || !password) {
+            document.getElementById("message").textContent = "Username and password are required.";
+            return;
         }
-    } catch (err) {
-        console.error(err);
-        document.getElementById("message").textContent = "Error connecting to server.";
-    }
-});
 
+        try {
+            const res = await fetch("/.netlify/functions/db?action=registerUser", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password, role })
+            });
 
+            const data = await res.json();
 
-// Back Button
-document.getElementById("backButton").addEventListener("click", () => {
-    window.location.href = "index.html"; // home page
-});
+            if (data.success) {
+                document.getElementById("message").textContent = "User registered successfully!";
+            } else {
+                document.getElementById("message").textContent = data.error || "Registration failed.";
+            }
+        } catch (err) {
+            console.error(err);
+            document.getElementById("message").textContent = "Error connecting to server.";
+        }
+    });
+}
 
-// Fetch and display products
+// ==================== FETCH PRODUCTS ====================
 function loadProducts() {
     fetch("/.netlify/functions/db?action=getProducts")
         .then(res => res.json())
@@ -168,7 +167,7 @@ function loadProducts() {
                         <td>${product.description}</td>
                         <td>$${product.price}</td>
                         <td>
-                            <button onclick="placeOrder('${product.product_name}', '${product.product_name}', ${product.price})">
+                            <button onclick="placeOrder('${product.product_id}', '${product.product_name}', ${product.price})">
                                 Order
                             </button>
                         </td>
@@ -179,15 +178,14 @@ function loadProducts() {
         .catch(err => console.error("Error loading products:", err));
 }
 
-// Place an order
+// ==================== PLACE ORDER ====================
 function placeOrder(productId, productName, price) {
-    //Check if user is logged in local 
     if (!localStorage.getItem("username")) {
         window.location.href = "user.html?redirect=products.html";
         return;
     }
     const customerName = localStorage.getItem("username");
-    const qty = parseInt(prompt('Enter quantity for ${productName}:'), 10);
+    const qty = parseInt(prompt(`Enter quantity for ${productName}:`), 10);
 
     if (!customerName || isNaN(qty) || qty <= 0) {
         alert("Invalid input. Please try again.");
@@ -202,9 +200,7 @@ function placeOrder(productId, productName, price) {
 
     fetch("/.netlify/functions/db?action=placeOrder", {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(orderData)
     })
         .then(res => res.json())
@@ -214,7 +210,7 @@ function placeOrder(productId, productName, price) {
         .catch(err => console.error("Error placing order:", err));
 }
 
-// Fetch and display orders (Admin)
+// ==================== FETCH ORDERS (ADMIN) ====================
 function loadOrders() {
     fetch("/.netlify/functions/db?action=viewOrders")
         .then(res => res.json())
