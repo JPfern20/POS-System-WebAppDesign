@@ -103,9 +103,9 @@ exports.handler = async (event) => {
     // ==================== PLACE ORDER ====================
     else if (event.httpMethod === "POST" && action === "placeOrder") {
   const body = JSON.parse(event.body || "{}");
-  const { product_id, quantity, customer_name, customer_id } = body;
+  const { product_id, quantity, customer_name, user_id } = body;
 
-  if (!product_id || !quantity || !customer_name || !customer_id) {
+  if (!product_id || !quantity || !customer_name || !user_id) {
     return { statusCode: 400, body: JSON.stringify({ error: "Missing order fields" }) };
   }
 
@@ -127,7 +127,7 @@ exports.handler = async (event) => {
     `INSERT INTO orders (customerID, total_amount, status_id, order_date)
      VALUES ($1, $2, 1, NOW())
      RETURNING order_id`,
-    [customer_id, totalAmount]
+    [user_id, totalAmount]
   );
   const order_id = orderInsert.rows[0].order_id;
 
