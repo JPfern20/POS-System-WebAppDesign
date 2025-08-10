@@ -4,7 +4,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     const currentPage = window.location.pathname;
     const params = new URLSearchParams(window.location.search);
-
+    renderCart(); // Render cart on page load
     // Products page → load products
     if (currentPage.includes("products.html")) {
         loadProducts();
@@ -152,6 +152,37 @@ if (registerForm) {
         }
     });
 }
+//==================== Render Cart ====================
+function renderCart() {
+  const cart = getCart();
+  const cartBody = document.getElementById("cartBody");
+  const cartTotal = document.getElementById("cartTotal");
+  if (!cartBody || !cartTotal) return;
+
+  cartBody.innerHTML = "";
+
+  let total = 0;
+
+  cart.forEach(item => {
+    const subtotal = item.price * item.quantity;
+    total += subtotal;
+
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+      <td>${item.product_name}</td>
+      <td>${item.quantity}</td>
+      <td>$${item.price.toFixed(2)}</td>
+      <td>$${subtotal.toFixed(2)}</td>
+      <td><button onclick="removeFromCart('${item.product_id}')">Remove</button></td>
+    `;
+
+    cartBody.appendChild(row);
+  });
+
+  cartTotal.textContent = `$${total.toFixed(2)}`;
+}
+
 
 // ==================== FETCH PRODUCTS ====================
 function loadProducts() {
@@ -356,7 +387,17 @@ function addToCart(productId, productName, price) {
   }
   saveCart(cart);
   alert(`${qty} x ${productName} added to cart.`);
+  renderCart(); 
 }
+
+//================= Remove from Cart ====================
+function removeFromCart(productId) {
+  let cart = getCart();
+  cart = cart.filter(item => item.product_id !== productId);
+  saveCart(cart);
+  renderCart();
+}
+
 
 // Checkout cart
 async function checkout() {
