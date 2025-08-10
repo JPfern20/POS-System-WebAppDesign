@@ -33,8 +33,10 @@ exports.handler = async (event) => {
     // ==================== VIEW ORDERS ====================
     else if (event.httpMethod === "GET" && action === "viewOrders") {
       const res = await client.query(`
-        SELECT o.order_id, o.customer_id, o.customer_name, o.product_id, o.quantity, s.status_name, o.order_date
+        SELECT o.order_id, o."customerID", u.username AS customer_name, oi.product_id, oi.quantity, s.status_name, o.order_date
         FROM orders o
+        JOIN users u ON o."customerID" = u.user_id
+        JOIN order_items oi ON o.order_id = oi.order_id
         JOIN status s ON o.status_id = s.status_id
         ORDER BY o.order_date DESC
       `);
