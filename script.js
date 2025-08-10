@@ -66,6 +66,8 @@ if (loginForm) {
 
             if (data.success) {
                 localStorage.setItem("username", username);
+                localStorage.setItem("role", data.role || "user");
+                document.getElementById("message").textContent = "Login successful!";
                 if (data.role === "user") {
                     window.location.href = "products.html";
                 } else {
@@ -100,7 +102,9 @@ if (adminLoginForm) {
             const data = await res.json();
 
             if (data.success) {
+                localStorage.setItem("username", username);
                 data.role = "admin";
+                localStorage.setItem("role", data.role || "admin");
                 if (data.role === "admin") {
                     localStorage.setItem("adminLoggedIn", "true");
                     window.location.href = "orders.html?autoload=true";
