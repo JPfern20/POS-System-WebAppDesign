@@ -105,7 +105,8 @@ async function checkout() {
     if (data.success) {
       alert("Checkout successful! Your order ID: " + data.order_id);
       localStorage.removeItem("cart"); // Clear cart after checkout
-      renderCart(); // Update cart display
+      renderCart();
+      window.location.href = "user.html?redirect=now_serve.html";
     } else {
       alert("Failed to checkout: " + (data.error || "Unknown error"));
     }
