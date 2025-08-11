@@ -39,7 +39,7 @@ exports.handler = async (event) => {
         JOIN order_items oi ON o.order_id = oi.order_id
         JOIN status s ON o.status_id = s.status_id
         JOIN products p ON oi.product_id = p.product_id
-        ORDER BY o.order_date DESC
+        ORDER BY o.order_date ASC
       `);
       result = res.rows;
     }
