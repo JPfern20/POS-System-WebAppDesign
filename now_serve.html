@@ -48,5 +48,20 @@
     <br>
     <button id="but1">View Products</button>
     <script src="script.js"></script>
+    <script>
+        // Function to refresh the tables every 3 seconds
+        function refreshTables() {
+            loadPendingOrders(); // Load pending orders
+            loadBeingServedOrders(); // Load currently serving orders
+        }
+
+        // Call refreshTables every 3000 milliseconds (3 seconds)
+        setInterval(refreshTables, 3000);
+
+        // Initial load of the tables when the page is loaded
+        document.addEventListener("DOMContentLoaded", () => {
+            refreshTables(); // Load tables on initial page load
+        });
+    </script>
 </body>
 </html>
