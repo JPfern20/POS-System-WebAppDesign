@@ -1,0 +1,77 @@
+<!DOCTYPE html> 
+<html lang="en">    
+<head>
+    <meta charset="UTF-8">
+    <title>Now Serving</title>
+    <style>
+        .queue-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        #now-serving {
+            margin-bottom: 30px;
+        }
+        .serving-spotlight {
+            background: #f8f8f8;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            text-align: center;
+            font-weight: bold;
+        }
+        .queue-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="queue-container">
+        <h2>Current Orders Status</h2>
+        
+        <div id="now-serving" class="now-serving-section">
+            <h3>Currently Serving <span id="currentStatus"></span></h3>
+            <div class="serving-spotlight"></div>
+            <table border="1" cellpadding="8" class="queue-table">
+                <thead>
+                    <tr>
+                        <th>Order #</th>
+                        <th>Customer</th>
+                        <th>Items</th>
+                    </tr>
+                </thead>
+                <tbody id="currentOrdersBody">
+                    <!-- Orders being served will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+
+        <div id="pending-orders">
+            <h3>Pending Orders</h3>
+            <table border="1" cellpadding="8" class="queue-table">
+                <thead>
+                    <tr>
+                        <th>Order #</th>
+                        <th>Customer</th>
+                        <th>Items</th>
+                        <th>Time Placed</th>
+                    </tr>
+                </thead>
+                <tbody id="pendingOrdersBody">
+                    <!-- Pending orders will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

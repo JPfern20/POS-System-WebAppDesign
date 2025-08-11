@@ -48,6 +48,36 @@ exports.handler = async (event) => {
     }
 }
 
+    // ==================== GET QUEUE ORDERS ====================
+  else if (event.httpMethod === "GET" && action === "getQueueOrders") {
+    const res = await client.query(`
+    SELECT o.order_id, o."customerID", u.username AS customer_name, oi.product_id, oi.quantity, s.status_name, o.order_date, p.product_name
+    FROM orders o
+    JOIN users u ON o."customerID" = u.user_id
+    JOIN order_items oi ON o.order_id = oi.order_id
+    JOIN status s ON o.status_id = s.status_id
+    JOIN products p ON oi.product_id = p.product_id
+    WHERE s.status_name IN ('pending')  -- Filter for specific statuses
+    ORDER BY o.order_date ASC
+  `);
+  result = res.rows;
+}
+// ==================== GET Being Serve Orders ====================
+else if (event.httpMethod === "GET" && action === "getBeingServeOrders") {
+  const res = await client.query(`
+    SELECT o.order_id, o."customerID", u.username AS customer_name, oi.product_id, oi.quantity, s.status_name, o.order_date, p.product_name
+    FROM orders o
+    JOIN users u ON o."customerID" = u.user_id
+    JOIN order_items oi ON o.order_id = oi.order_id
+    JOIN status s ON o.status_id = s.status_id
+    JOIN products p ON oi.product_id = p.product_id
+    WHERE s.status_name IN ('being served')  -- Filter for specific statuses
+    ORDER BY o.order_date ASC
+  `);
+  result = res.rows;
+}
+
+
     // ==================== VIEW ORDERS ====================
     else if (event.httpMethod === "GET" && action === "viewOrders") {
       const res = await client.query(`

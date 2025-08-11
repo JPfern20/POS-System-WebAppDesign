@@ -143,6 +143,105 @@ function loadProducts() {
     .catch(err => console.error("Error loading products:", err));
 }
 
+// ==================== LOAD QUEUE ORDERS ====================
+function loadQueueOrders() {
+  fetch("/.netlify/functions/db?action=getQueueOrders")
+    .then(res => res.json())
+    .then(data => {
+      const tbody = document.querySelector("#orderQueueTable tbody");
+      if (!tbody) return;
+
+      tbody.innerHTML = ""; // Clear existing rows
+
+      // Group orders by order_id
+      const groupedOrders = data.reduce((acc, order) => {
+        if (!acc[order.order_id]) {
+          acc[order.order_id] = {
+            order_id: order.order_id,
+            customer_name: order.customer_name,
+            products: [],
+            status_name: order.status_name,
+            order_date: order.order_date
+          };
+        }
+        acc[order.order_id].products.push({
+          product_id: order.product_id,
+          product_name: order.product_name,
+          quantity: order.quantity
+        });
+        return acc;
+      }, {});
+
+      // Populate the table with grouped orders
+      Object.values(groupedOrders).forEach(order => {
+        const productDetails = order.products.map(p => `${p.product_name} (Qty: ${p.quantity})`).join(", ");
+        tbody.innerHTML += `
+          <tr>
+            <td>${order.order_id}</td>
+            <td>${order.customer_name}</td>
+            <td>${productDetails || "-"}</td>
+            <td>${order.status_name}</td>
+            <td>${new Date(order.order_date).toLocaleString()}</td>
+          </tr>
+        `;
+      });
+    })
+    .catch(err => console.error("Error loading queue orders:", err));
+}
+
+
+// ==================== LOAD BEING SERVED ORDERS ====================
+function loadBeingServedOrders() {
+  fetch("/.netlify/functions/db?action=getBeingServeOrders")
+    .then(res => res.json())
+    .then(data => {
+      const tbody = document.querySelector("#currentOrdersBody");
+      if (!tbody) return;
+
+      tbody.innerHTML = ""; // Clear existing rows
+
+      // Group orders by order_id
+      const groupedOrders = data.reduce((acc, order) => {
+        if (!acc[order.order_id]) {
+          acc[order.order_id] = {
+            order_id: order.order_id,
+            customer_name: order.customer_name,
+            products: [],
+            status_name: order.status_name,
+            order_date: order.order_date
+          };
+        }
+        acc[order.order_id].products.push({
+          product_id: order.product_id,
+          product_name: order.product_name,
+          quantity: order.quantity
+        });
+        return acc;
+      }, {});
+
+      // Populate the table with grouped orders
+      Object.values(groupedOrders).forEach(order => {
+        const productDetails = order.products.map(p => `${p.product_name} (Qty: ${p.quantity})`).join(", ");
+        tbody.innerHTML += `
+          <tr>
+            <td>${order.order_id}</td>
+            <td>${order.customer_name}</td>
+            <td>${productDetails || "-"}</td>
+          </tr>
+        `;
+      });
+    })
+    .catch(err => console.error("Error loading being served orders:", err));
+}
+
+// Call loadBeingServedOrders on page load
+document.addEventListener("DOMContentLoaded", () => {
+  loadBeingServedOrders();
+});
+
+
+
+
 // ==================== ORDERS (ADMIN) ====================
 
 // Load all orders for admin view
@@ -227,7 +326,7 @@ function loadOrders() {
 document.addEventListener("DOMContentLoaded", () => {
   const currentPage = window.location.pathname;
   const params = new URLSearchParams(window.location.search);
-
+  loadQueueOrders();
   renderCart();  // <-- FIX: call the function to render cart on page load
 
   // Products page → load products
