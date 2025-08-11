@@ -37,7 +37,7 @@ function loadOrders() {
             <td>${order.customer_name}</td>
             <td>${order.products || "-"}</td>
             <td>${order.status_name}</td>
-            <td>P${order.total_amount || "-"}</td>
+            <td>PHP${order.total_amount || "-"}</td>
             <td>${new Date(order.order_date).toLocaleString()}</td>
           </tr>
         `;

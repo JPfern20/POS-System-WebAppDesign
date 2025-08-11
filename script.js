@@ -34,14 +34,14 @@ function renderCart() {
     row.innerHTML = `
       <td>${item.product_name || "Unknown"}</td>
       <td>${quantity}</td>
-      <td>$${price.toFixed(2)}</td>
-      <td>$${subtotal.toFixed(2)}</td>
+      <td>PHP${price.toFixed(2)}</td>
+      <td>PHP${subtotal.toFixed(2)}</td>
       <td><button onclick="removeFromCart('${item.product_id}')">Remove</button></td>
     `;
     cartBody.appendChild(row);
   });
 
-  cartTotal.textContent = `$${total.toFixed(2)}`;
+  cartTotal.textContent = `PHP${total.toFixed(2)}`;
 }
 
 // ==================== CART OPERATIONS ====================
