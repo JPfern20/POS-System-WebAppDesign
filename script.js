@@ -302,6 +302,14 @@ if (loginForm) {
   });
 }
 
+//===================== USER LOGOUT ====================
+document.getElementById("logoutBtn").addEventListener("click", () => {
+    localStorage.removeItem("user_id");
+    localStorage.removeItem("username");
+    localStorage.removeItem("role");
+    window.location.href = "user.html";
+  });
+
 // ==================== ADMIN LOGIN ====================
 
 const adminLoginForm = document.getElementById("adminLoginForm");

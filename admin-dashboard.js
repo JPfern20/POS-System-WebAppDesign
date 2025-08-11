@@ -19,12 +19,12 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Load all data
-  loadOrders();
+  adminloadOrders();
   loadProducts();
   loadUsers();
 });
 
-function loadOrders() {
+function adminloadOrders() {
   fetch("/.netlify/functions/db?action=viewOrders")
     .then(res => res.json())
     .then(data => {
