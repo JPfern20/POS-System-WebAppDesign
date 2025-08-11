@@ -335,7 +335,7 @@ function loadOrders() {
 document.addEventListener("DOMContentLoaded", () => {
   const currentPage = window.location.pathname;
   const params = new URLSearchParams(window.location.search);
-  loadQueueOrders();
+  
   renderCart();  // <-- FIX: call the function to render cart on page load
 
   // Products page → load products
