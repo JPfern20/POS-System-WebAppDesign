@@ -233,7 +233,7 @@ function loadBeingServedOrders() {
         const productDetails = order.products.map(p => `${p.product_name} (Qty: ${p.quantity})`).join(", ");
         tbody.innerHTML += `
           <tr>
-            
+            <td>${order.order_id}</td>
             <td>${order.customer_name}</td>
             <td>${productDetails || "-"}</td>
           </tr>
