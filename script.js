@@ -130,7 +130,7 @@ function loadProducts() {
           <tr>
             <td>${product.product_name}</td>
             <td>${product.description}</td>
-            <td>$${Number(product.price).toFixed(2)}</td>
+            <td>PHP${Number(product.price).toFixed(2)}</td>
             <td>
               <button onclick="addToCart('${product.product_id}', '${product.product_name}', ${product.price})">
                 Add to Cart
