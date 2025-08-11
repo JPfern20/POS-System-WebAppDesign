@@ -154,7 +154,7 @@ function loadQueueOrders() {
   fetch("/.netlify/functions/db?action=getQueueOrders")
     .then(res => res.json())
     .then(data => {
-      const tbody = document.querySelector("#orderQueueTable tbody");
+      const tbody = document.querySelector("#orderQueueTable");
       if (!tbody) return;
 
       tbody.innerHTML = ""; // Clear existing rows
