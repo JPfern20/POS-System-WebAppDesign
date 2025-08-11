@@ -142,7 +142,12 @@ function loadProducts() {
     })
     .catch(err => console.error("Error loading products:", err));
 }
-
+const nowServeButton = document.getElementById("nowServe");
+if (nowServeButton) {
+  nowServeButton.addEventListener("click", () => {
+    window.location.href = "queue-orders.html"; // Redirect to queue orders page
+  });
+}
 // ==================== LOAD QUEUE ORDERS ====================
 function loadQueueOrders() {
   fetch("/.netlify/functions/db?action=getQueueOrders")
