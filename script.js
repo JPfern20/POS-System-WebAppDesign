@@ -159,32 +159,13 @@ function loadPendingOrders() {
 
       tbody.innerHTML = ""; // Clear existing rows
 
-      // Group orders by order_id
-      const groupedOrders = data.reduce((acc, order) => {
-        if (!acc[order.order_id]) {
-          acc[order.order_id] = {
-            order_id: order.order_id,
-            customer_name: order.customer_name,
-            products: [],
-            order_date: order.order_date
-          };
-        }
-        acc[order.order_id].products.push({
-          product_id: order.product_id,
-          product_name: order.product_name,
-          quantity: order.quantity
-        });
-        return acc;
-      }, {});
-
-      // Populate the table with grouped orders
-      Object.values(groupedOrders).forEach(order => {
-        const productDetails = order.products.map(p => `${p.product_name} (Qty: ${p.quantity})`).join(", ");
+      // Populate the table with pending orders
+      data.forEach(order => {
         tbody.innerHTML += `
           <tr>
-            
+            <td>${order.order_id}</td>
             <td>${order.customer_name}</td>
-            <td>${productDetails || "-"}</td>
+            <td>${order.product_name} (Qty: ${order.quantity})</td>
             <td>${new Date(order.order_date).toLocaleString()}</td>
           </tr>
         `;
@@ -193,13 +174,7 @@ function loadPendingOrders() {
     .catch(err => console.error("Error loading pending orders:", err));
 }
 
-// Call loadPendingOrders on page load
-document.addEventListener("DOMContentLoaded", () => {
-  loadPendingOrders(); // Load pending orders when the page is loaded
-});
-
-
-// ==================== LOAD BEING SERVED ORDERS ====================
+// ==================== Load Being Served Orders ====================
 function loadBeingServedOrders() {
   fetch("/.netlify/functions/db?action=getBeingServeOrders")
     .then(res => res.json())
@@ -209,33 +184,13 @@ function loadBeingServedOrders() {
 
       tbody.innerHTML = ""; // Clear existing rows
 
-      // Group orders by order_id
-      const groupedOrders = data.reduce((acc, order) => {
-        if (!acc[order.order_id]) {
-          acc[order.order_id] = {
-            order_id: order.order_id,
-            customer_name: order.customer_name,
-            products: [],
-            status_name: order.status_name,
-            order_date: order.order_date
-          };
-        }
-        acc[order.order_id].products.push({
-          product_id: order.product_id,
-          product_name: order.product_name,
-          quantity: order.quantity
-        });
-        return acc;
-      }, {});
-
-      // Populate the table with grouped orders
-      Object.values(groupedOrders).forEach(order => {
-        const productDetails = order.products.map(p => `${p.product_name} (Qty: ${p.quantity})`).join(", ");
+      // Populate the table with currently serving orders
+      data.forEach(order => {
         tbody.innerHTML += `
           <tr>
             <td>${order.order_id}</td>
             <td>${order.customer_name}</td>
-            <td>${productDetails || "-"}</td>
+            <td>${order.product_name} (Qty: ${order.quantity})</td>
           </tr>
         `;
       });
@@ -243,12 +198,11 @@ function loadBeingServedOrders() {
     .catch(err => console.error("Error loading being served orders:", err));
 }
 
-// Call loadBeingServedOrders on page load
+// Call loadPendingOrders and loadBeingServedOrders on page load
 document.addEventListener("DOMContentLoaded", () => {
-  loadBeingServedOrders();
+  loadPendingOrders(); // Load pending orders when the page is loaded
+  loadBeingServedOrders(); // Load being served orders when the page is loaded
 });
-
-
 
 
 // ==================== ORDERS (ADMIN) ====================
