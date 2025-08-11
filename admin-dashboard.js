@@ -29,13 +29,36 @@ function loadOrders() {
     .then(res => res.json())
     .then(data => {
       const tbody = document.querySelector("#orderSummaryTable tbody");
-      tbody.innerHTML = "";
-      data.forEach(order => {
+      tbody.innerHTML = ""; // Clear existing rows
+
+      // Group orders by order_id if necessary
+      const groupedOrders = data.reduce((acc, order) => {
+        if (!acc[order.order_id]) {
+          acc[order.order_id] = {
+            order_id: order.order_id,
+            customer_name: order.customer_name,
+            status_name: order.status_name,
+            total_amount: order.total_amount,
+            order_date: order.order_date,
+            products: []
+          };
+        }
+        acc[order.order_id].products.push({
+          product_id: order.product_id,
+          product_name: order.product_name,
+          quantity: order.quantity
+        });
+        return acc;
+      }, {});
+
+      // Populate the table with grouped orders
+      Object.values(groupedOrders).forEach(order => {
+        const productDetails = order.products.map(p => `${p.product_name} (Qty: ${p.quantity})`).join(", ");
         tbody.innerHTML += `
           <tr>
             <td>${order.order_id}</td>
             <td>${order.customer_name}</td>
-            <td>${order.products || "-"}</td>
+            <td>${productDetails || "-"}</td>
             <td>${order.status_name}</td>
             <td>PHP${order.total_amount || "-"}</td>
             <td>${new Date(order.order_date).toLocaleString()}</td>
@@ -43,8 +66,9 @@ function loadOrders() {
         `;
       });
     })
-    .catch(console.error);
+    .catch(err => console.error("Error loading orders:", err));
 }
+
 
 function loadProducts() {
   fetch("/.netlify/functions/db?action=getProducts")
