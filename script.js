@@ -152,18 +152,72 @@ function loadOrders() {
     .then(data => {
       const table = document.getElementById("orderList");
       if (!table) return;
-      table.innerHTML = "";
-      data.forEach(order => {
+
+      // Group orders by order_id
+      const groupedOrders = data.reduce((acc, order) => {
+        if (!acc[order.order_id]) {
+          acc[order.order_id] = {
+            order_id: order.order_id,
+            customer: `${order.customer_id} - ${order.customer_name}`,
+            status: order.status_name,
+            order_date: order.order_date,
+            products: []
+          };
+        }
+        acc[order.order_id].products.push({
+          product_id: order.product_id,
+          product_name: order.product_name,  // You need to ensure this is returned from the backend!
+          quantity: order.quantity
+        });
+        return acc;
+      }, {});
+
+      table.innerHTML = ""; // Clear existing rows
+
+      // Create header row manually if needed
+      table.innerHTML += `
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Products</th>
+            <th>Status</th>
+            <th>Order Date</th>
+          </tr>
+        </thead>
+        <tbody>
+      `;
+
+      // For each grouped order, create a row with nested product table
+      Object.values(groupedOrders).forEach(order => {
+        let productRows = "";
+        order.products.forEach(p => {
+          productRows += `<tr><td>${p.product_id}</td><td>${p.product_name || "Unknown"}</td><td>${p.quantity}</td></tr>`;
+        });
+
+        const productTable = `
+          <table border="1" style="border-collapse: collapse; width: 100%;">
+            <thead>
+              <tr><th>Product ID</th><th>Name</th><th>Quantity</th></tr>
+            </thead>
+            <tbody>
+              ${productRows}
+            </tbody>
+          </table>
+        `;
+
         table.innerHTML += `
           <tr>
             <td>${order.order_id}</td>
-            <td>${order.customer_id} - ${order.customer_name}</td>
-            <td>${order.product_id} (Qty: ${order.quantity})</td>
-            <td>${order.status_name}</td>
+            <td>${order.customer}</td>
+            <td>${productTable}</td>
+            <td>${order.status}</td>
             <td>${order.order_date}</td>
           </tr>
         `;
       });
+
+      table.innerHTML += "</tbody>";
     })
     .catch(err => console.error("Error loading orders:", err));
 }
