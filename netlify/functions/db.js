@@ -87,6 +87,7 @@ else if (event.httpMethod === "GET" && action === "getBeingServeOrders") {
         JOIN order_items oi ON o.order_id = oi.order_id
         JOIN status s ON o.status_id = s.status_id
         JOIN products p ON oi.product_id = p.product_id
+        WHERE s.status_id IN (1, 2, 3)
         ORDER BY o.order_date ASC
       `);
       result = res.rows;
