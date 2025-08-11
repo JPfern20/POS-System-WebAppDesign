@@ -18,10 +18,15 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.href = "index.html";
   });
 
-  // Load all data
+  // Load all data initially
   adminloadOrders();
   loadProducts();
   loadUsers();
+
+  // Set intervals to reload data every 3 seconds
+  setInterval(adminloadOrders, 3000);
+  setInterval(loadProducts, 3000);
+  setInterval(loadUsers, 3000);
 });
 
 function updateOrderStatus(orderId, statusId) {
@@ -43,7 +48,6 @@ function updateOrderStatus(orderId, statusId) {
   })
   .catch(err => console.error("Error updating order status:", err));
 }
-
 
 function adminloadOrders() {
   fetch("/.netlify/functions/db?action=viewOrders")
@@ -100,7 +104,6 @@ function adminloadOrders() {
     })
     .catch(err => console.error("Error loading orders:", err));
 }
-
 
 function loadProducts() {
   fetch("/.netlify/functions/db?action=getProducts")
