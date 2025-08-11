@@ -29,6 +29,13 @@ function adminloadOrders() {
     .then(res => res.json())
     .then(data => {
       const tbody = document.querySelector("#orderSummaryTable tbody");
+      
+      // Check if tbody is found
+      if (!tbody) {
+        console.error("Table body not found. Please check the HTML structure.");
+        return; // Exit the function if tbody is not found
+      }
+
       tbody.innerHTML = ""; // Clear existing rows
 
       // Group orders by order_id if necessary
