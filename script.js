@@ -145,7 +145,7 @@ function loadProducts() {
 const nowServeButton = document.getElementById("nowServe");
 if (nowServeButton) {
   nowServeButton.addEventListener("click", () => {
-    window.location.href = "queue-orders.html"; // Redirect to queue orders page
+    window.location.href = "now_serve.html"; // Redirect to queue orders page
   });
 }
 // ==================== LOAD QUEUE ORDERS ====================
