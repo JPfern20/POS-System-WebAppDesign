@@ -149,12 +149,12 @@ if (nowServeButton) {
     window.location.href = "now_serve.html"; // Redirect to queue orders page
   });
 }
-// ==================== LOAD QUEUE ORDERS ====================
-function loadQueueOrders() {
-  fetch("/.netlify/functions/db?action=getQueueOrders")
+// ==================== Load Pending Orders ====================
+function loadPendingOrders() {
+  fetch("/.netlify/functions/db?action=getQueueOrders") // Ensure this action fetches pending orders
     .then(res => res.json())
     .then(data => {
-      const tbody = document.querySelector("#orderQueueTable");
+      const tbody = document.querySelector("#pendingOrdersBody"); // Updated ID
       if (!tbody) return;
 
       tbody.innerHTML = ""; // Clear existing rows
@@ -166,7 +166,6 @@ function loadQueueOrders() {
             order_id: order.order_id,
             customer_name: order.customer_name,
             products: [],
-            status_name: order.status_name,
             order_date: order.order_date
           };
         }
@@ -183,17 +182,21 @@ function loadQueueOrders() {
         const productDetails = order.products.map(p => `${p.product_name} (Qty: ${p.quantity})`).join(", ");
         tbody.innerHTML += `
           <tr>
-            <td>${order.order_id}</td>
+            
             <td>${order.customer_name}</td>
             <td>${productDetails || "-"}</td>
-            <td>${order.status_name}</td>
             <td>${new Date(order.order_date).toLocaleString()}</td>
           </tr>
         `;
       });
     })
-    .catch(err => console.error("Error loading queue orders:", err));
+    .catch(err => console.error("Error loading pending orders:", err));
 }
+
+// Call loadPendingOrders on page load
+document.addEventListener("DOMContentLoaded", () => {
+  loadPendingOrders(); // Load pending orders when the page is loaded
+});
 
 
 // ==================== LOAD BEING SERVED ORDERS ====================
@@ -230,7 +233,7 @@ function loadBeingServedOrders() {
         const productDetails = order.products.map(p => `${p.product_name} (Qty: ${p.quantity})`).join(", ");
         tbody.innerHTML += `
           <tr>
-            <td>${order.order_id}</td>
+            
             <td>${order.customer_name}</td>
             <td>${productDetails || "-"}</td>
           </tr>
