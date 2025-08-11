@@ -21,9 +21,15 @@
     button {
       cursor: pointer;
     }
+    #greeting {
+      font-size: 1.5em;
+      margin-bottom: 20px;
+    }
   </style>
 </head>
 <body>
+  <div id="greeting"></div> <!-- Greeting header -->
+
   <h1>Available Products</h1>
 
   <!-- Products Table -->
@@ -69,10 +75,27 @@
   <button id="checkoutBtn" onclick="checkout()">Checkout</button>
 
   <br /><br />
-  <button id="logoutBtn">Logout</button>
+  <button id="logoutBtn" style="display: none;">Logout</button>
   <br>
   <button id="backButton">Back to Home</button>
 
   <script src="script.js"></script>
+  <script>
+    // Function to display greeting
+    function displayGreeting() {
+      const username = localStorage.getItem("username");
+      const greetingDiv = document.getElementById("greeting");
+      if (username) {
+        greetingDiv.textContent = `Welcome, ${username}!`;
+      } else {
+        greetingDiv.textContent = `Welcome, Guest!`;
+      }
+    }
+
+    // Call displayGreeting on page load
+    document.addEventListener("DOMContentLoaded", () => {
+      displayGreeting();
+    });
+  </script>
 </body>
 </html>

@@ -412,6 +412,17 @@ if (loginForm) {
 
 // ==================== USER LOGOUT ====================
 const logoutBtn = document.getElementById("logoutBtn");
+
+// Check if user is logged in and show/hide logout button accordingly
+function checkUser_Login() {
+  const userId = localStorage.getItem("user_id");
+  if (userId) {
+    logoutBtn.style.display = "block"; // Show logout button
+  } else {
+    logoutBtn.style.display = "none"; // Hide logout button
+  }
+}
+
 if (logoutBtn) {
   logoutBtn.addEventListener("click", () => {
     localStorage.removeItem("user_id");
@@ -420,6 +431,12 @@ if (logoutBtn) {
     window.location.href = "user.html";
   });
 }
+
+// Call checkUser Login on page load
+document.addEventListener("DOMContentLoaded", () => {
+  checkUser_Login(); // Check user login status when the page loads
+});
+
 
 // ==================== ADMIN LOGIN ====================
 
