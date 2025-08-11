@@ -60,6 +60,41 @@ button:hover {
     transform: translateY(-2px) scale(1.05);
 }
 
+/* Styles for the main tables */
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 20px 0;
+}
+
+th, td {
+    border: 1px solid #3a2c0f;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #b3a04d;
+    color: #fffbe6;
+}
+
+/* Styles for nested product tables */
+table table {
+    margin: 10px 0;
+    width: 100%;
+}
+
+table table th, table table td {
+    border: 1px solid #6d4c41;
+    padding: 5px;
+}
+
+table table th {
+    background-color: #6d4c41;
+    color: #fffbe6;
+}
+
+/* Responsive adjustments */
 @media (max-width: 600px) {
     header {
         padding: 25px 0 10px 0;
