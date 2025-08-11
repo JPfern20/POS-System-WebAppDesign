@@ -30,6 +30,24 @@ exports.handler = async (event) => {
       result = res.rows;
     }
 
+    // ==================== UPDATE ORDER STATUS ====================
+    else if (event.httpMethod === "POST" && action === "updateOrderStatus") {
+      const body = JSON.parse(event.body || "{}");
+      const { order_id, status_id } = body;
+    if (!order_id || !status_id) {
+    return { statusCode: 400, body: JSON.stringify({ error: "Missing order_id or status_id" }) };
+      }
+    try {
+    await client.query(
+      `UPDATE orders SET status_id = $1 WHERE order_id = $2`,
+      [status_id, order_id]
+    );
+    result = { success: true, message: "Order status updated successfully" };
+    } catch (err) {
+      return { statusCode: 500, body: JSON.stringify({ error: err.message }) };
+    }
+}
+
     // ==================== VIEW ORDERS ====================
     else if (event.httpMethod === "GET" && action === "viewOrders") {
       const res = await client.query(`

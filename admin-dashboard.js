@@ -24,21 +24,40 @@ document.addEventListener("DOMContentLoaded", () => {
   loadUsers();
 });
 
+function updateOrderStatus(orderId, statusId) {
+  fetch("/.netlify/functions/db?action=updateOrderStatus", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ order_id: orderId, status_id: statusId })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      alert("Order status updated successfully!");
+      adminloadOrders(); // Reload orders to reflect changes
+    } else {
+      alert("Failed to update order status: " + (data.error || "Unknown error"));
+    }
+  })
+  .catch(err => console.error("Error updating order status:", err));
+}
+
+
 function adminloadOrders() {
   fetch("/.netlify/functions/db?action=viewOrders")
     .then(res => res.json())
     .then(data => {
       const tbody = document.querySelector("#orderSummaryTable tbody");
       
-      // Check if tbody is found
       if (!tbody) {
         console.error("Table body not found. Please check the HTML structure.");
-        return; // Exit the function if tbody is not found
+        return;
       }
 
       tbody.innerHTML = ""; // Clear existing rows
 
-      // Group orders by order_id if necessary
       const groupedOrders = data.reduce((acc, order) => {
         if (!acc[order.order_id]) {
           acc[order.order_id] = {
@@ -58,7 +77,6 @@ function adminloadOrders() {
         return acc;
       }, {});
 
-      // Populate the table with grouped orders
       Object.values(groupedOrders).forEach(order => {
         const productDetails = order.products.map(p => `${p.product_name} (Qty: ${p.quantity})`).join(", ");
         tbody.innerHTML += `
@@ -69,6 +87,13 @@ function adminloadOrders() {
             <td>${order.status_name}</td>
             <td>PHP${order.total_amount || "-"}</td>
             <td>${new Date(order.order_date).toLocaleString()}</td>
+            <td>
+              <button onclick="updateOrderStatus(${order.order_id}, 1)">Pending</button>
+              <button onclick="updateOrderStatus(${order.order_id}, 2)">Processing</button>
+              <button onclick="updateOrderStatus(${order.order_id}, 3)">Being Served</button>
+              <button onclick="updateOrderStatus(${order.order_id}, 4)">Completed</button>
+              <button onclick="updateOrderStatus(${order.order_id}, 5)">Cancelled</button>
+            </td>
           </tr>
         `;
       });
